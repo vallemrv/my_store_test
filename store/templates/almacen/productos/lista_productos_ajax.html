@@ -1,0 +1,158 @@
+{% load admin_extras %}
+
+{% if query %}
+  <div class="bg-light p-3 mb-3 content-table">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Modelo</th>
+          {% if ch == "taller" %}
+          <th>Reparación</th>
+          <th>Nº Pres</th>
+          {% endif %}
+          <th>NS o imei</th>
+          <th>Estado</th>
+         {% if ch == "disponibles" %}
+         <th>Precio compra</th>
+         <th>Precio venta</th>
+         {% endif %}
+         <th style="width:20%" class="text-center">Acciones </th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in query %}
+          <tr>
+          <td>{{ c|modelo }}</td>
+          {% if ch == "taller" %}
+          <td>{{ c|reparacion }}</td>
+          <td>{{ c|num_pres }}</td>
+          {% endif %}
+          <td>{{ c.ns_imei }}</td>
+          <td>{{ c.get_estado_display }}</td>
+          {% if ch == "disponibles" %}
+            <td>{{ c.precio_compra }} €</td>
+            <td id="precio_{{c.id}}">{{ c|precio_venta }}</td>
+          {% endif %}
+          <td class="text-center">
+            {% if estado == "all" %}
+                <a href="{% url 'get_historial' id_producto=c.id %}" class="btn btn-primary btn-accion">
+                  <span class="fa fa-search"></span></a>
+                <a href="#" class="btn btn-primary  btn-accion" data-toggle="collapse" data-target="#status_{{c.id}}" aria-expanded="false" aria-controls="status_{{c.id}}">
+                  <span class="fa fa-stack-exchange"></span></a>
+                <a href="#" class="btn btn-primary  btn-accion" data-toggle="collapse" data-target="#borrar_coll_{{c.id}}" aria-expanded="false" aria-controls="borrar_coll_{{c.id}}">
+                  <span class="fa fa-trash"></span></a>
+               {% if c|editable %}
+                  <a href="#" class="btn btn-primary  btn-accion" data-toggle="collapse" data-target="#collapse{{c.id}}" aria-expanded="false" aria-controls="collapse{{c.id}}">
+                    <span class="fa fa-edit"></span></a>
+                {% endif %}
+            {% else %}
+                {% if c.estado == "OS" %}
+                  <a href="{% url 'testeo' id_producto=c.id %} " class="btn btn-primary  btn-accion">
+                    <span class="fa fa-search"></span></a>
+                {% elif c.estado == "RP" %}
+                  <a href="{% url 'reparacion' id_producto=c.id %}" class="btn btn-primary  btn-accion">
+                    <span class="fa fa-search"></span></a>
+                {% elif c.estado == "PS" %}
+                  <a href="{% url 'get_presupuesto_by_id' id_producto=c.id %}" class="btn btn-primary btn-accion">
+                    <span class="fa fa-search"></span></a>
+                  <a href="{% url 'get_presupuesto_pdf' id_producto=c.id %}" class="btn btn-primary  btn-accion">
+                    <span class="fa fa-file"></span></a>
+                {% elif c.estado == "OK" %}
+                    <a href="{% url 'entrega_reparacion' id_producto=c.id %}" class="btn btn-primary btn-accion">
+                      <span class="fa fa-search"></span></a>
+                {% elif c.estado == "PD" %}
+                  <a href="{% url 'get_presupuesto_pdf' id_producto=c.id %}" class="btn btn-primary  btn-accion">
+                    <span class="fa fa-file"></span></a>
+                  <a href="{% url 'get_presupuesto_by_id' id_producto=c.id %}" class="btn btn-primary  btn-accion">
+                    <span class="fa fa-edit"></span></a>
+                  <a href="{% url 'send_producto_rp' id_producto=c.id %}" class="btn btn-primary btn-accion">
+                    <span class="fa fa-handshake-o"></span></a>
+                {% else %}
+                  <a href="{% url 'get_historial' id_producto=c.id %}" class="btn btn-primary btn-accion">
+                    <span class="fa fa-search"></span></a>
+                {% endif %}
+                {% if c|document_show %}
+                  <a href="{{c|document_href}}" class="btn btn-primary btn-accion">
+                    <span class="fa fa-file"></span></a>
+                {% endif %}
+                {% if c.estado == "TD" %}
+                  <a href="{% url 'trato_compra' id_producto=c.id %}" class="btn btn-primary btn-accion">
+                    <span class="fa fa-handshake-o"></span></a>
+                  <a href="{% url 'cancelar_trato' id_producto=c.id %}" class="btn btn-primary btn-accion">
+                    <span class="fa fa-ban"></span></a>
+                {% endif %}
+                {% if c|editable %}
+                  <a href="#" class="btn btn-primary btn-accion" data-toggle="collapse" data-target="#collapse{{c.id}}" aria-expanded="false" aria-controls="collapse{{c.id}}">
+                    <span class="fa fa-edit"></span></a>
+                {% endif %}
+
+            {% endif %}
+
+          </td>
+        </tr>
+          <tr>
+            <td  colspan="6">
+               {% if c|editable %}
+
+                  <div  class="collapse" id="collapse{{c.id}}">
+                    <form id="form_{{c.id}}" class="form-inline float-right ml-2" method="post" onsubmit="modified({{c.id}}); return false">
+                        {% csrf_token %}
+                        <input class="form-control mr-sm-2" type="text" name="precio_venta" placeholder="Precio venta" aria-label="Precio Venta">
+                        <button class="btn btn-outline" type="submit">Enviar</button>
+                    </form>
+                  </div>
+              {% endif %}
+
+              {% if estado == "all" %}
+                <div  class="collapse" id="borrar_coll_{{c.id}}" >
+                    <div class="float-right">
+                        <button onclick="$('#borrar_coll_{{c.id}}').collapse('hide');" class="btn btn-primary">Cancelar</button>
+                        <a href="{% url 'rm_producto' id_producto=c.id pg='tienda' %}" class="btn btn-warning ">
+                          Seguroooooooo </a>
+                      </div>
+                 </div>
+
+                 <div  class="collapse" id="status_{{c.id}}" >
+                     <div class="float-right">
+                       <form  class="form-inline float-right ml-2" action="{% url 'cambiar_estado' id=c.id%}" method="post">
+                           {% csrf_token %}
+                           {% for field in form_estado %}
+                                <div class="form-group">
+                                  {{ field|addcss:"form-control m-2" }}
+                                </div>
+                             {% endfor %}
+                            <button type="submit" class="btn btn-primary m-2">Cambiar</button>
+                            <button onclick="$('#status_{{c.id}}').collapse('hide');" class="btn btn-primary">Cerrar</button>
+                        </form>
+                     </div>
+                  </div>
+
+               {% endif %}
+          </td>
+         </tr>
+
+
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <script type="text/javascript">
+    function modified(id){
+      params = $("#form_"+id).serialize()
+      $.post("{% url 'modificar_precio_venta_none'%}"+id+"/", params, function(res){
+        if(res.success){
+           $("#collapse"+id).collapse("hide");
+           $("#precio_"+id).text(parseFloat(res.precio).toFixed(2)+" €");
+        }
+      })
+      return false;
+    }
+  </script>
+{% else %}
+    <div class="jumbotron jumbotron-fluid">
+      <div class="container pl-3">
+          <h1 class="display-3">Upps!</h1>
+          <p class="lead">No se ha encotrado ninguna coincidencia....</p>
+      </div>
+    </div>
+{% endif %}

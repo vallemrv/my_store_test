@@ -1,0 +1,156 @@
+{% extends "base_admin.html" %}
+{% load admin_extras %}
+{% block content %}
+
+<div class="bg-light page-header">
+  <h1 class="d-inline">Compra</h1>
+  <div class="clearfix">
+  </div>
+</div>
+
+<div class="bg-light p-3 mb-3">
+  <div class="d-flex justify-content-between bg-light">
+    <div id="inf_cliente" class="d-inline">
+        <p>Cliente: <b>{{c.nombre}}</b> DNI: {{c.DNI}}</p>
+    </div>
+
+    <form id="form_search" class="form-inline my-2 my-lg-0" method="post">
+        {% csrf_token %}
+        <input class="form-control mr-sm-2" type="text" name="filter" placeholder="Buscar" aria-label="Search">
+        <button onclick="buscar_cliente(); return false;" class="btn btn-outline-success my-2 my-sm-0" type="submit">Buscar</button>
+        <button class="btn btn-primary ml-1" onclick="borrar_buscar_cliente(); return false;">
+          <span class="fa fa-window-close-o"></span>
+        </button>
+    </form>
+  </div>
+</div>
+
+
+<div class="bg-light p-3 mb-3  collapse" id="cambiar_ciente">
+
+</div>
+
+<div class="bg-light p-3 mb-3">
+  <div class="d-flex justify-content-between bg-light">
+    <div id="inf_modelo" class="d-inline">
+        <p>Modelo: <b>{{m.nombre}}</b>
+    </div>
+
+    <form id="form_search_modelo" class="form-inline my-2 my-lg-0" method="post">
+        {% csrf_token %}
+        <input class="form-control mr-sm-2" type="text" name="filter" placeholder="Buscar" aria-label="Search">
+        <button onclick="buscar_modelo(); return false;" class="btn btn-outline-success my-2 my-sm-0" type="submit">Buscar</button>
+        <button class="btn btn-primary ml-1" onclick="borrar_buscar_modelo(); return false;">
+          <span class="fa fa-window-close-o"></span>
+        </button>
+    </form>
+  </div>
+</div>
+
+<div class="bg-light p-3 mb-3  collapse" id="cambiar_modelo">
+
+</div>
+
+<div class="bg-light mb-3 p-3">
+  <form method="post" id="form_compra">
+    {% csrf_token %}
+    <div class="row">
+        {% for field in form %}
+        {% if field.name == "modelo" or field.name == "cliente" %}
+           {{ field }}
+        {% else %}
+       <div class="col-md-6">
+         <div class="form-group">
+           <label for="{{field.name}}">{{ field.label }}</label>
+           {{ field|addcss:"form-control" }}
+         </div>
+       </div>
+      {% endif %}
+      {% endfor %}
+    </div>
+    <div class="form-group" style="padding-top: 5px;">
+      <button onclick="terminar(); return false;" class="btn btn-primary">Enviar</button>
+    </div>
+ </form>
+</div>
+
+<script type="text/javascript">
+
+  var ns_imei = []
+  var lineas = []
+  var total = 0;
+  var grabar = false;
+  var modelo_id = {{m.id}}
+
+  function set_cliente(id, nombre, dni){
+    $("input[name='cliente']").val(id);
+    $("#inf_cliente").html('<p>Cliente: <b>'+nombre+'</b> DNI:'+ dni +'</p>');
+    $("#cambiar_ciente").empty()
+    $("#cambiar_ciente").collapse("hide");
+  }
+
+  function borrar_buscar_cliente(){
+    $("#form_search")[0].reset()
+    $("#cambiar_ciente").empty()
+    $("#cambiar_ciente").collapse("hide");
+  }
+
+
+  function buscar_cliente(){
+    data = $("#form_search").serialize();
+    $.post("{% url 'ch_find_cliente' %} ", data, function(res){
+        if (res){
+          $("#form_search")[0].reset()
+          $("#cambiar_ciente").html(res)
+          $("#cambiar_ciente").collapse("show");
+        }
+    });
+    return false;
+  }
+
+
+  function set_modelo(id, nombre){
+    modelo_id = id;
+    $("input[name='modelo']").val(id);
+    $("#inf_modelo").html('<p>Moldelo: <b>'+nombre+'</b> ');
+    $("#cambiar_modelo").empty()
+    $("#cambiar_modelo").collapse("hide");
+  }
+
+  function borrar_buscar_modelo(){
+    $("#form_search_modelo")[0].reset()
+    $("#cambiar_modelo").empty()
+    $("#cambiar_modelo").collapse("hide");
+  }
+
+
+  function buscar_modelo(){
+    data = $("#form_search_modelo").serialize();
+    $.post("{% url 'ch_find_modelo' %} ", data, function(res){
+        if (res){
+          $("#form_search_modelo")[0].reset()
+          $("#cambiar_modelo").html(res)
+          $("#cambiar_modelo").collapse("show");
+        }
+    });
+    return false;
+  }
+
+
+  function terminar(){
+      data = $("#form_compra").serialize();
+      $.post("{% url 'modificar_compra' id_compra=f.id %} ", data, function(res){
+          location.href = res
+      });
+  }
+
+  function get_precio(){
+      data = $("form").serialize();
+      url = "{% url 'calcular_precio_usado' id_modelo=1 %} "
+      $.post(url.replace("1", modelo_id), data, function(res){
+          $("input[name='precio_compra']").val(res)
+      });
+  }
+
+</script>
+{% endblock content %}

@@ -1,0 +1,130 @@
+{% extends "base_admin.html" %}
+{% load static %}
+{% block content %}
+<script src="{% static 'js/Chart.min.js'%}"></script>
+
+<div class="bg-light page-header">
+    <div class="row">
+      <div class="col-12 col-md-7 ">
+        <h3>Balances y graficas</h3>
+      </div>
+      <div class="col-12 col-md-5 ">
+        <div class="float-md-right d-inline">
+          <form onsubmit="actualizar(); return false;" class="form-inline">
+              {% csrf_token %}
+              <select class="form-control ml-2" name="years">
+                <option value="2017">2017</option>
+                <option value="2018">2018</option>
+                <option value="2019">2019</option>
+                <option value="2020">2020</option>
+                <option value="2021">2021</option>
+                <option value="2022">2022</option>
+                <option value="2023">2023</option>
+                <option value="2024">2024</option>
+                <option value="2025">2025</option>
+                <option value="2026">2026</option>
+                <option value="2027">2027</option>
+                <option value="2028">2028</option>
+                <option value="2029">2029</option>
+                <option value="2030">2030</option>
+                <option value="2031">2031</option>
+                <option value="2032">2032</option>
+              </select>
+              <select class="form-control ml-2" name="month">
+                <option value="01">Enero</option>
+                <option value="02">Febrero</option>
+                <option value="03">Marzo</option>
+                <option value="04">Abril</option>
+                <option value="05">Mayo</option>
+                <option value="06">Junio</option>
+                <option value="07">Julio</option>
+                <option value="08">Agosto</option>
+                <option value="09">Septiembre</option>
+                <option value="10">Octubre</option>
+                <option value="11">Noviembre</option>
+                <option value="12">Diciembre</option>
+              </select>
+              <button class="btn btn-outline-success ml-2" type="submit">Cambiar</button>
+          </form>
+        </div>
+      </div>
+    </div>
+</div>
+
+<div class="row p-3 mb-3">
+  <div class="col-md-6">
+      <div class="bg-light m-1 p-1">
+        <canvas id="ventas"  height="400"></canvas>
+      </div>
+  </div>
+
+  <div class="col-md-6">
+    <div class="bg-light m-1 p-1">
+       <canvas id="stock" height="400"></canvas>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+    var ventasChart = new Chart($("#ventas"), {
+            type: 'bar'
+    });
+
+    var comprasChart = new Chart($("#stock"), {
+            type: 'bar'
+    });
+
+    $(function(){
+        var d = new Date();
+        $("[name='years']").val(d.getFullYear());
+        var month = d.getMonth() + 1;
+        month = month < 10 ? '0' + month : '' + month;
+        $("[name='month']").val(month);
+        actualizar();
+        get_stock();
+    });
+
+    function get_stock(){
+       $.get("{% url 'get_stock' %}", function(res){
+         data ={
+             labels: res.labels,
+             datasets:[{
+               label: res.total,
+               data: res.datos,
+               backgroundColor: res.color
+             }]
+           }
+           comprasChart.data = data
+           comprasChart.update();
+       });
+    }
+
+    function actualizar(){
+       var label = "Balance";
+       var datos = $("form").serialize();
+       $.post("{% url 'get_ventas_chart' %}",datos, function(res){
+          data = {
+                labels: ["Ventas", "Compras", "Beneficio", "IVA"],
+                datasets:[{
+                  label: label,
+                  data: [res.ventas, res.compras, res.beneficio, res.iva],
+                  backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)'
+                ],
+                borderColor: 'rgb(0,0,0,0)',
+                }]
+          }
+          ventasChart.data = data
+          ventasChart.update();
+       });
+    }
+
+
+
+
+</script>
+
+{% endblock %}

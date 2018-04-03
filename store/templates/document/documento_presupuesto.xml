@@ -1,0 +1,272 @@
+<!--
+@Author: Manuel Rodriguez <valle>
+@Date:   18-Oct-2017
+@Email:  valle.mrv@gmail.com
+@Last modified by:   valle
+@Last modified time: 06-Jan-2018
+@License: Apache license vesion 2.0
+-->
+
+{% load filter_document %}
+<!DOCTYPE document SYSTEM "rml.dtd">
+<document filename="example_01.pdf">
+  <template leftMargin="40" title="{{title}}" showBoundary="no">
+    <!--this section contains elements of the document -->
+    <!--which are FIXED into position. -->
+    <pageTemplate id="main" pageSize="a4">
+      <pageGraphics>
+        <image file="templates/document/freakmedia-logo.jpg" x="40" y="700" mask='auto' width="250" preserveAspectRatio="1"/>
+        <setFont name="Helvetica-Bold" size="10"/>
+        <drawString  x="320" y="780" >FREAKMEDIA</drawString >
+        <drawString  x="320" y="765" >14631732-Y</drawString >
+        <drawString  x="320" y="750" >CAMINO DE RONDA, 73</drawString >
+        <drawString  x="320" y="735" >18004, GRANADA</drawString >
+        <drawString  x="320" y="720" >www.freakmedia.es /// info@freakmedia.es </drawString >
+
+        <drawString  x="360" y="690" > SIGUENOS EN FACEBOOK: </drawString >
+        <image file="templates/document/facebook.png" x="360" y="660" mask='auto' width="25" preserveAspectRatio="1"/>
+        <drawString  x="390" y="670" > @FreakMediaGranada </drawString >
+
+
+        <setFont name="Helvetica-Bold" size="10"/>
+        <stroke color="black"/>
+        <fill color="gray"/>
+        <rect x="40" y="625" width="100" height="20"
+            fill="yes" stroke="yes" />
+        <rect x="140" y="625" width="210" height="20"
+            fill="yes" stroke="yes" />
+        <rect x="350" y="625" width="50" height="20"
+            fill="yes" stroke="yes" />
+        <rect x="400" y="625" width="50" height="20"
+            fill="yes" stroke="yes" />
+        <rect x="450" y="625" width="55" height="20"
+            fill="yes" stroke="yes" />
+        <rect x="505" y="625" width="60" height="20"
+            fill="yes" stroke="yes" />
+
+        <rect x="40" y="400" width="100" height="225"
+            fill="no" stroke="yes" />
+        <rect x="140" y="400" width="210" height="225"
+            fill="no" stroke="yes" />
+        <rect x="350" y="400" width="50" height="225"
+            fill="no" stroke="yes" />
+        <rect x="400" y="400" width="50" height="225"
+            fill="no" stroke="yes" />
+        <rect x="450" y="400" width="55" height="225"
+            fill="no" stroke="yes" />
+        <rect x="505" y="400" width="60" height="225"
+            fill="no" stroke="yes"/>
+
+        <rect x="460" y="370" width="105" height="20"
+            fill="yes" stroke="yes" />
+        <rect x="460" y="340" width="105" height="30"
+            fill="no" stroke="yes" />
+
+        <fill color="black"/>
+        <drawString  x="50" y="630">CODIGO</drawString >
+        <drawString  x="230" y="630" >DESCRIPCIÓN</drawString >
+        <drawString  x="360" y="630" >CANT. </drawString >
+        <drawString  x="410" y="630" >PUD. </drawString >
+        <drawString  x="460" y="630" >DTO (%) </drawString >
+        <drawString  x="510" y="630" >Total </drawString >
+
+        <drawString  x="500" y="376" >TOTAL </drawString >
+
+
+        <setFont name="Helvetica" size="10"/>
+
+        <place x="40" y="400" width="565" height="225">
+          {% if lineas %}
+          <blockTable colWidths="100,210,50,50,55,60"  style="blocktablestyle1">
+            {% for p in lineas %}
+            <tr>
+               <td> <para alignment="left" >{{p.codigo}}</para></td>
+               <td> <para alignment="left">{{p.detalle}}</para></td>
+               <td> <para alignment="right">{{p.can}}</para> </td>
+               <td> <para alignment="right">{{p.precio}} </para></td>
+               <td> <para alignment="right">{{p.descuento}} </para></td>
+               <td> <para alignment="right">{{p|total_pres}}</para></td>
+             </tr>
+            {% endfor %}
+          </blockTable>
+          {% endif %}
+        </place>
+
+       </pageGraphics>
+
+      <frame id="fecha" x1="35" y1="650" width="525" height="50"/>
+      <frame id="total_venta" x1="460" y1="340" width="105" height="30"/>
+      {% if entrega > 0 %}
+        <frame id="texto_entrega" x1="400" y1="310" width="125" height="30"/>
+        <frame id="texto_devolver" x1="400" y1="295" width="125" height="30"/>
+        <frame id="entrega" x1="430" y1="310" width="125" height="30"/>
+        <frame id="devolver" x1="430" y1="295" width="125" height="30"/>
+      {% endif %}
+      <frame id="forma_pago" x1="35" y1="370" width="390" height="30"/>
+      <frame id="cliente" x1="35" y1="265" width="390" height="100"/>
+      <frame id="garantia" x1="35" y1="50" width="525" height="210"/>
+
+    </pageTemplate>
+
+    <pageTemplate id="factura" pageSize="a4">
+        <pageGraphics>
+          <drawString  x="40" y="180">FREAKMEDA</drawString >
+          <drawString  x="310" y="180">CLIENTE</drawString >
+        </pageGraphics>
+
+        <frame id="fecha" x1="35" y1="35" width="525" height="795"/>
+        <frame id="firma_freak" x1="35" y1="40" width="250" height="130"/>
+        <frame id="firma_cliente" x1="350" y1="10" width="250" height="130"/>
+    </pageTemplate>
+
+  </template>
+  <stylesheet>
+    <!--this section contains the STYLE information for -->
+    <!--the document, but there isn't any yet. The tags still -->
+    <!--have to be present, however, or the document won't compile.-->
+    <!-- A blockTableStyle tag for styling a table-->
+         <blockTableStyle id="blocktablestyle1">
+         <blockFont name="Courier-Bold"/>
+         <blockFont name="Helvetica-BoldOblique" size="8"/>
+         <blockTextColor colorName="green"/>
+         </blockTableStyle>
+               <paraStyle name="textstyle1"
+                         fontName="Helvetica"
+                         fontSize="9"
+                         textColor="blue"/>
+  </stylesheet>
+  <story>
+      <para fontSize="13">
+          <b>Fecha:</b> {{fecha}}
+      </para>
+        <spacer length="5"/>
+      <para fontSize="13">
+          <b>Nº presupuesto:</b> {{num_pres}}
+      </para>
+      <nextFrame name="total_venta"/>
+
+          <para alignment="center" fontSize="14">
+              <b>{{total}} €</b>
+          </para>
+
+          {% if entrega > 0 %}
+          <nextFrame name="texto_entrega"/>
+              <para alignment="left" fontSize="12">
+                  <b>Entrega: </b>
+              </para>
+          <nextFrame name="texto_devolver"/>
+              <para alignment="left" fontSize="12">
+                   <b>Total cobro:</b>
+              </para>
+          <nextFrame name="entrega"/>
+              <para alignment="right" fontSize="12">
+                  <b>{{entrega}} €</b>
+              </para>
+          <nextFrame name="devolver"/>
+              <para alignment="right" fontSize="12">
+                   <b>{{total_cobro}} €</b>
+              </para>
+
+          {% endif %}
+
+      <nextFrame name="forma_pago"/>
+        <para fontSize="12">
+           {% if total|es_cero %}
+               Esperando la valoración del técnico
+           {% endif %}
+        </para>
+
+      <nextFrame name="cliente"/>
+        <para fontSize="12">
+              <b>Nombre:</b> {{nombre}}
+          </para>
+            <spacer length="4"/>
+          <para fontSize="12">
+              <b>DNI:</b> {{DNI}}
+          </para>
+            <spacer length="4"/>
+          <para fontSize="12">
+              <b>Domicilio:</b> {{domicilio}}
+          </para>
+          <spacer length="4"/>
+          <para fontSize="12">
+              <b>Telefono:</b> {{telefono}}
+          </para>
+
+
+        <nextFrame name="garantia"/>
+            <para fontSize="16">
+              Producto averiado: <b>{{producto}}</b>
+            </para>
+            <para fontSize="16">
+              NS_IMEI: <b>{{sn_imei}}</b>
+            </para>
+            <spacer length="5"/>
+            <para fontSize="16">
+              Observaciones del cliente: <b>{{detalle}}</b>
+            </para>
+
+      <setNextTemplate name="factura"/>
+      <nextFrame/>
+        <para fontSize="12">
+          1. De acuerdo a la LOPD. El cliente debe entregar el terminal sin tarjeta de memoria ni tarjeta SIM.
+          No nos hacemos responsables de la pérdida de las misma en caso de que el cliente no las retire.
+          <br/><br/>
+          2. El Tiempo máximo de almacenaje y custodia del terminal sin coste para el cliente será de 30
+          días. A partir de ahi, el coste será de 2€ por día. Pasados dos meses desde la comunicación al cliente
+          se entenderá que el mismo renuncia al términal y pasará a reciclaje.
+          <br/><br/>
+          3. Para cualquier reclamación será imprescindible presentar este resguardo. Por tanto, el servicio
+          técnico declina toda responsabilidad derivada a la pérdida de mismo.
+          <br/><br/>
+          4. A causa de la reparación es posible que se puedan perder datos, por lo que es recomendable que efectúe
+          una copia de los mismos.
+          <br/><br/>
+          5. La apertura del teléfono y manipulación por parte del servicio técnico puede hacer perder la garantía
+          de según que marcas y modelos de teléfonos por lo que no nos hacemos cargo de reclamaciones
+          recibidas por este motivo.
+          <br/><br/>
+          6. La reparación efectuada tendrá una garantia de 90 días sobre el trabajo efectuado (excepto los teléfonos mojados).
+          Queda garantizada la reparación tanto en materiales como en mano de obra y no otras posibles anomalías que podrían presentar iguales o
+          parecidos efectos.
+          <br/><br/>
+          7. El titular podrá ejercer los derechos de acceso, rectificación, cancelación y oposición previsto en la
+          legislación vigente en materia de Protección de datos.
+          <br/><br/>
+          8. El fabricante recomienda que todas la reparaciones que se efectúen se actualice el teléfono
+          a la última versión disponible lo cual conlleva el retorno del aparato a su configuración de fábrica.
+          Por lo cual, no nos reponsabilizamos de la pérdida de datos del usuario, variaciones de software, ni los simlocks
+          que hubieran podido haber sido aplicados al aparato posteriores a su salida de nuestras dependencias.
+          <br/><br/>
+          9. No nos resposibilizamos de cualquier otra avería que no sea avisada o pueda ser comprobada con anterioridad.
+          (ej: El terminal no enciende)
+          <br/><br/>
+          10. La garantía no cubre los daños producidos por un mal uso, incluyendo los producidos por la manipulación de terceros
+          <br/><br/>
+          11. En caso de reparaciones de placa base, el terminal tiene un pequeño porcentaje de no volver a funcionar,
+          en función de la dificultad de reparación.
+          <br/><br/>
+          <b>Se confirma la acetación de todas la cláusulas de reparación por parte del cliente con su firma en la parte inferior de la misma
+          hoja en el momento de la entrega del terminal.</b>
+        </para>
+        <nextFrame/>
+
+            <illustration width="100" height="100" borderStrokeWidth="1" borderStrokeColor="black">
+                 <!-- x and y coordinates are from the bottom left corner -->
+                 <!-- of the containing illustration -->
+                 <image file="static/media/{{firma_freak}}" mask='auto' x="10" y="10"  width="150" height="150"/>
+            </illustration>
+
+
+
+        <nextFrame/>
+        <illustration width="100" height="100" borderStrokeWidth="1" borderStrokeColor="black">
+             <!-- x and y coordinates are from the bottom left corner -->
+             <!-- of the containing illustration -->
+            {% if "firmas/presupuestos/"|file_exist:firma_cliente %}
+               <image file="firmas/presupuestos/{{firma_cliente}}" mask='auto' x="0" y="0"  width="150" height="150"/>
+             {% endif %}
+        </illustration>
+
+   </story>
+</document>

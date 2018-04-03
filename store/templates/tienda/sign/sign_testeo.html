@@ -1,0 +1,64 @@
+<nav class="navbar navbar-light bg-light">
+    <a class="navbar-brand " >Firma y DNI</a>
+    <div class="mt-3 p-4">
+       <p><b>Nombre: </b>{{datos.nombre}}</p>
+       <p><b>DNI: </b>{{datos.DNI}}</p>
+    </div>
+</nav>
+
+<div class="bg-light mt-3 p-3">
+
+   <div class="bg-warning p-5 mb-3">
+     El cliente da su consentimiento a FREAKMEDIA para testear y/o probar las funciones básicas del terminal, así como
+     un exhaustivo exame del estado de la batería, conectores, botones y LCD del mismo.
+     Los técnicos utilizarán tarjetas SIM propias de la empresa para probar las funciones de red de los terminales
+     sin interferir en los datos del dueño del terminal. Por consigiente, no nos hacemos responsables del terminales que entren
+     en test y hayan sido anteriormente sustraídos o encontrados y pueden ser denunciados al conectar a la red.
+   </div>
+   <div class="d-inline">
+         <div class="text-center">
+           <p><b>FIRMA</b></p>
+           <canvas class="bg-light sketchpad m-auto d-block"></canvas>
+           <a class="btn btn-primary mt-2" id="clear" href="#">Borrar</a>
+         </div>
+       </div>
+
+   </div>
+
+
+      <div class="p-4">
+        <p class="mt-3">
+          PROTECCIÓN DE DATOS</p>
+          <p>
+          De conformidad con lo establecido en el Art. 5 de la Ley Orgánica 15/1999 de diciembre de
+          Protección de Datos de Carácter Personal, sus datos ha sido incorporados a un fichero de responsabilidad de <b>FREAKMEDIA</b>.
+          La finalidad del tratamiento es la de gestionar de forma adecuada la prestación del servicio que nos ha requerido.
+          Asimismo estos datos no serán cedidos a terceros, salvo las cesiones legalmente permitidas. Podrá ejercitar su derechos de acceso, restificación, cancelación
+          y oposición en la sigiente dirección: Camino de rodan, 73, 18004 Granada; o bien remitiendo un correo electrónico a freakmedia@gmail.com
+         </p>
+          <button class="btn btn-primary btn-block mt-2" id="aceptar" >Aceptar condiciones</button>
+      </div>
+
+</div>
+<script>
+  $(function() {
+    var sketchpad = new Sketchpad({
+      element: '.sketchpad',
+      width: 350,
+      height: 250,
+    });
+    sketchpad.penSize = 2;
+    //var pads = $('.sketchpad').sketchpad();
+    // we can manipulate inner canvas programaticaly by pads array
+    $("#clear").on("click", function(){
+       sketchpad.clear()
+    });
+    $("#aceptar").on("click", function(){
+      $.post('/api/set_firma_testeo_insitu/{{datos.pk}}/{{datos.DNI}}/', {file: sketchpad.canvas.toDataURL()},
+        function(res){
+            find_sign();
+        })
+
+    })
+  });
+</script>

@@ -1,0 +1,10 @@
+Saludos {% if user.get_full_name %}{{ user.get_full_name }}{% else %}{{ user }}{% endif %},
+
+Bienvenido al equipo de FreakMedia. Para poder activar tu cuenta y  para poder trabajar con el equipo, tienes que cambiar la contraseña, entrando en el link o copiandolo y pegandolo en el explorador.
+
+{{ protocol }}://{{ domain }}{% url 'password_reset_confirm' uid token %}
+
+
+Tu nombre de usuario (luego podras camiarlo a tu antojo) es  {{ user.username }}
+
+El equipo de FreakMedia  te desea lo mejor

@@ -1,0 +1,60 @@
+{% extends "base_admin.html" %}
+{% load admin_extras %}
+{% block content %}
+<div class="bg-light page-header d-flex justify-content-between ">
+  <h2>Tipos usado</h2>
+  {% if not 'Editar' in mensaje %}
+    <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+          Agregar
+        </button>
+  {% endif %}
+</div>
+
+<div class="bg-light p-3 mb-3 {% if not 'Editar' in mensaje %} collapse {% endif %}" id="collapseExample">
+  <div class="p-3">
+    <h3>{{mensaje}}</h3>
+  </div>
+  <form method="post">
+    {% csrf_token %}
+    {% for field in form %}
+      <div class="form-group">
+        <label for="{{field.name}}">{{ field.label }}</label>
+        {{ field|addcss:"form-control" }}
+      </div>
+    {% endfor %}
+
+      <button type="submit" class="btn btn-primary">Enviar formulario</button>
+  </form>
+</div>
+
+{% if tipos %}
+  <div class="bg-light p-3 mb-3 content-table">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Descripcion</th>
+          <th>Incremento</th>
+          <th class="text-center">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in tipos %}
+        <tr>
+          <td>{{ c.nombre }}</td>
+          <td>{{ c.descripcion }}</td>
+          <td>{{ c.incremento }}</td>
+          <td class="text-center">
+            <a href="{% url 'tipo_usados' id_tipo=c.id %}" class="btn btn-primary mb">
+              <span class="fa fa-edit"></span></a>
+            <a href="{% url 'rm_tipos' id_tipo=c.id %}" class="btn btn-primary">
+                <span class="fa fa-trash"></span></a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endif %}
+
+{% endblock content %}

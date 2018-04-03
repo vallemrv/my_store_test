@@ -1,0 +1,80 @@
+<!--
+@Author: Manuel Rodriguez <valle>
+@Date:   18-Oct-2017
+@Email:  valle.mrv@gmail.com
+@Last modified by:   valle
+@Last modified time: 03-Feb-2018
+@License: Apache license vesion 2.0
+-->
+
+{% load filter_document %}
+<!DOCTYPE document SYSTEM "rml.dtd">
+<document filename="example_01.pdf">
+  <template leftMargin="40" title="{{title}}" showBoundary="no">
+    <!--this section contains elements of the document -->
+    <!--which are FIXED into position. -->
+    <pageTemplate id="main" pageSize="a4">
+      <pageGraphics>
+        <image file="templates/document/freakmedia-logo.jpg" x="40" y="700" mask='auto' width="250" preserveAspectRatio="1"/>
+        <setFont name="Helvetica-Bold" size="10"/>
+        <drawString  x="320" y="780" >Informe de compras</drawString >
+        <drawString  x="320" y="765" >Desde {{start}}</drawString >
+        <drawString  x="320" y="750" >Hasta {{end}}</drawString >
+
+        <setFont name="Helvetica-Bold" size="10"/>
+        <stroke color="black"/>
+        <fill color="gray"/>
+        <rect x="20" y="670" width="110" height="20"
+            fill="yes" stroke="yes" />
+        <rect x="130" y="670" width="110" height="20"
+            fill="yes" stroke="yes" />
+        <rect x="240" y="670" width="110" height="20"
+            fill="yes" stroke="yes" />
+        <rect x="350" y="670" width="110" height="20"
+            fill="yes" stroke="yes" />
+        <rect x="460" y="670" width="110" height="20"
+            fill="yes" stroke="yes" />
+
+        <rect x="20" y="50" width="110" height="620"
+            fill="no" stroke="yes" />
+        <rect x="130" y="50" width="110" height="620"
+            fill="no" stroke="yes" />
+        <rect x="240" y="50" width="110" height="620"
+            fill="no" stroke="yes" />
+        <rect x="350" y="50" width="110" height="620"
+            fill="no" stroke="yes" />
+        <rect x="460" y="50" width="110" height="620"
+            fill="no" stroke="yes" />
+
+        <fill color="black"/>
+        <drawString  x="25" y="675">NOMBRE</drawString >
+        <drawString  x="135" y="675" >DIRECCION</drawString >
+        <drawString  x="245" y="675" >DNI </drawString >
+        <drawString  x="355" y="675" >IMEI </drawString >
+        <drawString  x="465" y="675" >PRODUCTO </drawString >
+
+       </pageGraphics>
+
+
+       <frame id="first" x1="25" y1="50" width="550" height="620"/>
+    </pageTemplate>
+  </template>
+  <stylesheet>
+    <!--this section contains the STYLE information for -->
+    <!--the document, but there isn't any yet. The tags still -->
+    <!--have to be present, however, or the document won't compile.-->
+  </stylesheet>
+  <story>
+    <blockTable colWidths="110, 110, 110, 110, 110">
+      {% for r in reg %}
+         <tr>
+             <td><para>{{r.nombre}}</para></td>
+             <td><para>{{r.direccion}}</para></td>
+             <td><para>{{r.DNI}}</para></td>
+             <td><para>{{r.ns_imei}}</para></td>
+             <td><para>{{r.des}}</para></td>
+         </tr>
+        {% endfor  %}
+         </blockTable>
+  </story>
+</document>

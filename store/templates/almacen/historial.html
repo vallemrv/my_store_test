@@ -1,0 +1,59 @@
+{% extends "base_admin.html" %}
+{% load admin_extras %}
+{% block content %}
+<div class="bg-light page-header d-flex justify-content-between">
+  <h2 class="">Historial producto</h2>
+  {% if recuperar %}
+      <a class="btn btn-primary" href="{% url 'volver_testear_producto' id_producto=p.id %}" >
+        Testear
+      </a>
+  {% endif %}
+</div>
+
+<div class="bg-light p-3 mb-3 content-table">
+  <h2 class="">Producto</h2>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Modelo</th>
+        <th>NS o IMEI</th>
+        <th>Marca</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>{{ p|modelo}}</td>
+        <td>{{ p.ns_imei }}</td>
+        <td>{{ p|marca }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div id="main-content">
+  <div class="bg-light p-3 mb-3 content-table">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Cliente</th>
+          <th>Usuario</th>
+          <th>Detalle</th>
+          <th>Fecha</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in query %}
+        <tr>
+          <td>{{ c.cliente }}</td>
+          <td>{{ c.usuario }}</td>
+          <td>{{ c.detalle }}</td>
+          <td>{{ c.fecha }}</td>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+
+{% endblock content %}

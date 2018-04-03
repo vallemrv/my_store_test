@@ -1,0 +1,49 @@
+{% load filter_document %}
+
+{% if facturas %}
+  <div class="bg-light p-3 mb-3 content-table">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Cliente</th>
+          <th>Nº abono</th>
+          <th>Total</th>
+          <th class="text-center">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in facturas %}
+        <tr>
+          <td>{{ c.fecha_salida }}</td>
+          <td>{{ c.cliente.DNI }}</td>
+          <td>{{ c.pk }}</td>
+          <td>{{ c|total_abono }}</td>
+          <td class="text-center">
+              <a href="{% url 'get_abono_by_id' id_abono=c.id %}" class="btn btn-primary ">
+                <span class="fa fa-file"></span></a>
+              <button  class="btn btn-primary ml-1" data-toggle="collapse" data-target="#collapse{{c.id}}" aria-expanded="false" aria-controls="collapse{{c.id}}">
+                <span class="fa fa-send"></span></button>
+          </td>
+        </tr>
+         <tr>
+          <td colspan="6">
+            <div  class="collapse text-right" id="collapse{{c.id}}">
+                <button onclick="$('#collapse{{c.id}}').collapse('hide');" class="btn btn-primary">Cancelar</button>
+                <a href="{% url 'send_abono' id_abono=c.id %}" class="btn btn-warning">Enviar al cliente</a>
+                <div class="clearfix"></div>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+    <div class="jumbotron jumbotron-fluid">
+      <div class="container pl-3">
+          <h1 class="display-3">Upps!</h1>
+          <p class="lead">No se ha encotrado ninguna coincidencia....</p>
+      </div>
+    </div>
+{% endif %}

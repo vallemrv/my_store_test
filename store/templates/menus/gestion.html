@@ -1,0 +1,50 @@
+{% extends "base_admin.html" %}
+
+{% block content %}
+  <div class="bg-light page-header">
+    <h2>Gestion</h2>
+  </div>
+
+<div class="bg-light p-3 mb-3">
+  <div class="row">
+        <div class="col-6 col-md-4 col-lg-3">
+          <a href="{% url 'lista_clientes'%} " class="btn btn-primary btn-inicio">Clientes</a>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3">
+          <a href="{% url 'lista_proveedores' %} " class="btn btn-primary btn-inicio">Proveedores</a>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3">
+          <a href="{% url 'lista_usuarios'  %} " class="btn btn-primary btn-inicio">Empleados</a>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3">
+          <a href="{% url 'almacenes'  %} " class="btn btn-primary btn-inicio">Almacenes</a>
+        </div>
+
+        <div class="col-6 col-md-4 col-lg-3">
+          <a href="{% url 'categorias'  %} " class="btn btn-primary btn-inicio">Categorias</a>
+        </div>
+
+        <div class="col-6 col-md-4 col-lg-3">
+          <a href="{% url 'marcas'  %} " class="btn btn-primary btn-inicio">Marcas</a>
+        </div>
+
+        <div class="col-6 col-md-4 col-lg-3">
+          <a href="{% url 'modelos'  %} " class="btn btn-primary btn-inicio">Modelos</a>
+        </div>
+
+        <div class="col-6 col-md-4 col-lg-3">
+          <a href="{% url 'tipo_usados'  %} " class="btn btn-primary btn-inicio">Tipo usados</a>
+        </div>
+
+        <div class="col-6 col-md-4 col-lg-3">
+          <a href="{% url 'tipo_testeo' %} " class="btn btn-primary btn-inicio">Editar testeos</a>
+        </div>
+
+        <div class="col-6 col-md-4 col-lg-3">
+          <a href="{% url 'configuracion' %}" class="btn btn-primary btn-inicio">Configuración</a>
+        </div>
+
+    </div>
+</div>
+
+{% endblock content %}

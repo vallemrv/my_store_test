@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
+
+    <link href="/static/css/font-awesome.min.css" rel="stylesheet">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <title>Firmas</title>
+  </head>
+  <body >
+    <!-- As a link -->
+
+    <div class="container-fluid sign ">
+      <nav class="navbar navbar-light bg-light">
+          <a class="navbar-brand " >Firmas</a>
+      </nav>
+      <div id="content" class="bg-light mt-3">
+         {% include "tienda/sign/standby.html" %}
+      </div>
+
+    </div>
+
+
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="/static/js/jquery-3.2.1.min.js" ></script>
+    <script src="/static/js/sketchpad.js" ></script>
+    <script src="/static/js/popper.min.js" ></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+
+    <script type="text/javascript">
+          var refreshId = setInterval(find_sign, 10000);
+          var standby = ""
+          $(function(){
+             $.ajaxSetup({ cache: false });
+             standby = $("#content").html();
+             find_sign()
+            });
+
+          function find_sign() {
+               clearInterval(refreshId);
+               $.get("{% url 'get_document_sign' %}", function(res){
+                  if (res!=""){
+                      $("#content").html(res);
+                  }else{
+                    $("#content").html(standby);
+                    refreshId = setInterval(find_sign, 10000);
+                  }
+               });
+          }
+    </script>
+  </body>
+</html>

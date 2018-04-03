@@ -1,0 +1,294 @@
+{% extends "base_admin.html" %}
+{% load admin_extras %}
+{% block content %}
+
+<div class="bg-light page-header">
+  <h1 class="d-inline">Ventas</h1>
+  <form id="form_find" onsubmit="get_producto(); return false" class="form-inline my-2 my-lg-0 float-right" method="post">
+      {% csrf_token %}
+      <input id="input_main" class="form-control mr-sm-2 typeahead" type="text" autocomplete="off" name="ns_imei" placeholder="Ns o IMEI" aria-label="Search">
+      <button class="btn btn-outline-success mr-2" type="submit">Agregar</button>
+      <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#productos" aria-expanded="false" aria-controls="productos">
+            Nuevo
+      </button>
+  </form>
+  <div class="clearfix">
+  </div>
+</div>
+
+<div class="bg-light p-3 mb-3">
+  <div class="d-flex justify-content-between bg-light">
+    <div id="inf_cliente" class="d-inline">
+        <p>Cliente: <b>{{c.nombre_completo}}</b> DNI: {{c.DNI}}</p>
+    </div>
+
+    <form id="form_search" class="form-inline my-2 my-lg-0" method="post">
+        {% csrf_token %}
+        <input class="form-control mr-sm-2" type="text" name="filter" placeholder="Buscar" aria-label="Search">
+        <button onclick="buscar_cliente(); return false;" class="btn btn-outline-success my-2 my-sm-0" type="submit">Buscar</button>
+        <button class="btn btn-primary ml-1" onclick="borrar_buscar_cliente(); return false;">
+          <span class="fa fa-window-close-o"></span>
+        </button>
+    </form>
+  </div>
+</div>
+
+
+<div class="bg-light p-3 mb-3  collapse" id="camiar_cliente">
+
+</div>
+
+<div class="bg-light p-3 mb-3  collapse" id="productos">
+  <div class="p-3">
+    <h3>Producto nuevo</h3>
+  </div>
+  <form id="form_complemento" method="post" onsubmit="save_complemento(); return false;">
+    {% csrf_token %}
+    <div class="form-row mb-2">
+      <div class="col-2">
+        <input type="text" name="codigo_compra" placeholder="Codigo" class="form-control mr-2">
+      </div>
+      <div class="col-2">
+        <input type="text" name="ns_imei" placeholder="Ns o imei"  class="form-control mr-2">
+      </div>
+      <div class="col-6">
+        <input type="text" name="detalle" placeholder="Detalle"  class="form-control mr-2">
+      </div>
+      <div class="col-2">
+          <input type="text" name="precio_venta" placeholder="Precio"  class="form-control mr-2">
+      </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Aceptar</button>
+</form>
+</div>
+
+<div class="bg-light p-3 mb-3">
+  <div class="bg-light p-3 mb-3 content-table">
+    <h2 class="">Factura</h2>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Código</th>
+              <th>Descripción</th>
+              <th>Can</th>
+              <th>Importe</th>
+              <th>Des</th>
+              <th>Total</th>
+              <th></th>
+              <colgroup>
+                <col style="width:20%">
+                <col style="width:40%">
+                <col style="width:10%">
+                <col style="width:10%">
+                <col style="width:10%">
+                <col style="width:10%">
+              </colgroup>
+            </tr>
+          </thead>
+          <tbody>
+
+          </tbody>
+        </table>
+      </div>
+        <div class="form-group" style="padding-top: 5px;">
+             <a onclick="terminar(); return false;" href="#" class="btn btn-primary">Modificar</a>
+             <a href="{% url 'salir_venta' %} " class="btn btn-primary">Cancelar</a>
+             <div class="float-right mr-2" style="font-size: 1.5em">
+                <b>Total: <span id="total">0</span> €</b>
+             </div>
+             <form class="form-inline float-right mr-2">
+              <label for="forma-pago">Forma de pago</label>
+              <select class="form-control ml-2 mr-2" name="forma-pago">
+                <option value="EF">Efectivo</option>
+                <option value="TJ">Tarjeta</option>
+            </select>
+            </form>
+
+        </div>
+
+</div>
+
+<script type="text/javascript">
+
+  var ns_imei = []
+  var lineas = []
+  var total = 0;
+  var grabar = false;
+  var cliente = {{c.id}}
+
+  $(function(){
+    html_nuevo = $("#collapseExample").html();
+    grabar = false;
+    $.get("{% url 'get_lineas_factura' id_venta=f.id %}", function(res){
+       $(res).each(function(index, value){
+          crear_linea_producto(value)
+       });
+       grabar = true;
+    })
+  });
+
+  function set_cliente(id, nombre, dni){
+    cliente = id;
+    $("#inf_cliente").html('<p>Cliente: <b>'+nombre+'</b> DNI:'+ dni +'</p>');
+    $("#camiar_cliente").empty()
+    $("#camiar_cliente").collapse("hide");
+  }
+
+  function borrar_buscar_cliente(){
+    $("#form_search")[0].reset()
+    $("#camiar_cliente").empty()
+    $("#camiar_cliente").collapse("hide");
+  }
+
+
+  function buscar_cliente(){
+    data = $("#form_search").serialize();
+    $.post("{% url 'ch_find_cliente' %} ", data, function(res){
+      if (res){
+        $("#form_search")[0].reset()
+        $("#camiar_cliente").html(res)
+        $("#camiar_cliente").collapse("show");
+      }
+    });
+    return false;
+  }
+
+  function terminar(){
+        data = {
+        "csrfmiddlewaretoken": $("input[name='csrfmiddlewaretoken']").val(),
+        "lineas": JSON.stringify(lineas),
+        "forma_pago":  $("select[name='forma-pago']").val(),
+        "cliente_id": cliente,
+      }
+      $.post("{% url 'modificar_factura' id_venta=f.id %} ", data, function(res){
+          location.href = res
+      });
+  }
+
+  function get_total_descuento(des_porcentage, precio){
+    var descuento = 1
+    if (des_porcentage > 0){
+      descuento = 1 - (des_porcentage / 100)
+    }
+    return precio * descuento
+  }
+
+  function get_linea_cantidad(es_unico, datos){
+     if (es_unico){
+        return $("<span>1</span>")
+     }else{
+        return $("<input id='can_"+datos.imei+"' type='text' name='can' value='1'>")
+                                 .addClass("form-control")
+                                 .change(function(){
+                                    var can = $(this).val();
+                                    var total_unidad = datos.total_unidad
+                                    var descuento = datos.descuento
+                                    var total_linea = get_total_descuento(descuento,
+                                       can * total_unidad)
+                                    datos.can = can;
+                                    $("#total"+datos.imei).text(total_linea.toFixed(2));
+                                    refresh_total();
+                                 })
+     }
+  }
+
+  function crear_linea_producto(res){
+    var index = ns_imei.indexOf(res.ns_imei)
+    if (index > -1){
+      if (res.es_unico) return false;
+      else {
+          var datos = lineas[index];
+          var can = parseInt(datos.can) + 1;
+          $("#can_"+res.ns_imei).val(can);
+          $("#can_"+res.ns_imei).change();
+          return false;
+      }
+    }
+    body = $("tbody");
+    var datos = {
+         imei: res.ns_imei,
+         can: 1,
+         total_unidad: res.precio,
+         descuento: res.descuento,
+         codigo_compra: res.codigo_compra,
+      }
+    body.append($('<tr>')
+      .append($('<td>').text(res.codigo_compra))
+      .append($('<td>').html(res.modelo))
+      .append($('<td>').append(get_linea_cantidad(res.es_unico, datos)))
+      .append($('<td>').text(parseFloat(res.precio).toFixed(2)))
+      .append($('<td>').append($("<input  type='text' name='can' value='0'>")
+                    .addClass("form-control")
+                    .change(function(){
+                      var descuento = $(this).val();
+                      var total_unidad = datos.total_unidad
+                      var can = datos.can
+                      var total_linea = get_total_descuento(descuento,
+                         can * total_unidad);
+                      $("#total"+datos.imei).text(total_linea.toFixed(2));
+                      datos.descuento = descuento;
+                      refresh_total();
+                    })))
+      .append($('<td id="total'+res.ns_imei+'">').text(get_total_descuento(res.descuento,
+                                                        res.precio).toFixed(2)))
+      .append($("<td>").append(
+        $("<a>").append($('<span>').addClass("fa fa-trash"))
+                .addClass("btn btn-primary")
+                .on("click", function(){
+                   var linea = $(this).parent().parent()
+                   var index = lineas.indexOf(datos);
+                   lineas.splice(index, 1);
+                   ns_imei.splice(index, 1);
+                   linea.remove();
+                   refresh_total()
+                })
+      )))
+
+    lineas.push(datos);
+    ns_imei.push(datos.imei)
+    refresh_total();
+    $("#input_main").focus();
+  }
+
+  function refresh_total(){
+    total = 0;
+    for (i=0; i<lineas.length; i++){
+        total += get_total_descuento(lineas[i].descuento,
+          lineas[i].can * lineas[i].total_unidad)
+    }
+    $("#total").text(total.toFixed(2))
+  }
+
+  function get_producto(){
+      try {
+            data = $("#form_find").serialize();
+            $.post("{% url 'get_producto' %} ", data, function(res){
+              if (res.result){
+                crear_linea_producto(res)
+                $("#form_find")[0].reset()
+                $("#collapseExample").collapse("hide")
+              }else{
+                $("#collapseExample").collapse("show")
+              }
+            });
+      }
+      catch(err) {
+        console.log (err.message);
+      }
+      return false;
+  }
+
+  function save_complemento(){
+     data = $("#form_complemento").serialize();
+     $.post("{% url 'save_complemento' %} ", data, function(res){
+       if (res.result){
+         crear_linea_producto(res);
+         $("#form_find")[0].reset()
+         $("#form_complemento")[0].reset()
+         $("#collapseExample").collapse("hide")
+       }
+     });
+     return false;
+  }
+</script>
+{% endblock content %}

@@ -1,0 +1,42 @@
+{% load filter_document %}
+
+{% if facturas %}
+  <div class="bg-light p-3 mb-3 content-table">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Cliente</th>
+          <th>Nº Presupuesto</th>
+          <th>Total</th>
+          <th class="text-center">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in facturas %}
+        <tr>
+          <td>{{ c.fecha }}</td>
+          <td>{{ c.cliente.DNI }}</td>
+            <td>{{ c.pk }}</td>
+          <td>{{ c|total_pres_doc }}</td>
+          <td class="text-center">
+            <a href="{% url 'modificar_presupuesto' id_producto=c.producto.pk %}" class="btn btn-primary ml-1">
+              <span class="fa fa-search"></span></a>
+              <a href="{% url 'get_presupuesto_pdf' id_producto=c.producto.pk %}" class="btn btn-primary ">
+                <span class="fa fa-file"></span></a>
+              <a href="{% url 'send_presupuesto' id_producto=c.producto.pk %}" class="btn btn-primary ml-2">
+                <span class="fa fa-send"></span></a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+    <div class="jumbotron jumbotron-fluid">
+      <div class="container pl-3">
+          <h1 class="display-3">Upps!</h1>
+          <p class="lead">No se ha encotrado ninguna coincidencia....</p>
+      </div>
+    </div>
+{% endif %}

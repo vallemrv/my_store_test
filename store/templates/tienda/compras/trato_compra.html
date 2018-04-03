@@ -1,0 +1,131 @@
+{% extends "base_admin.html" %}
+{% load admin_extras %}
+{% block content %}
+<div class="bg-light page-header d-flex justify-content-between ">
+  <h2 class="">Trato de compra</h2>
+  {% if not 'Editar' in mensaje %}
+    <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+          Hacer trato
+        </button>
+  {% endif %}
+</div>
+
+<div class="bg-light p-3 mb-3 {% if not 'Editar' in mensaje %} collapse {% endif %}" id="collapseExample">
+  <div class="p-3">
+    <h3>Modificar trato</h3>
+  </div>
+  <form method="post">
+    {% csrf_token %}
+    <div class="row">
+      {% for field in form %}
+        <div class="form-group col-md-6">
+          <label for="{{field.name}}">{{ field.label }}</label>
+          {{ field|addcss:"form-control" }}
+        </div>
+      {% endfor %}
+      </div>
+      <button onclick="comprar(); return false;"  class="btn btn-primary ">Aceptar trato</button>
+      <button onclick="cancelar(); return false;"  class="btn btn-danger">Cancelar trato</button>
+
+  </form>
+</div>
+
+
+<div class="bg-light p-3 mb-3 content-table">
+  <h2 class="">Producto</h2>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Modelo</th>
+        <th>NS o IMEI</th>
+        <th>Precio</th>
+        <th>Tipo</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>{{ p.modelo }}</td>
+        <td>{{ p.ns_imei }}</td>
+        <td>{{ p.precio_compra }}</td>
+        <td>{{ p.tipo}}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+{% if query %}
+    <div id="main-content">
+      <div class="bg-light p-3 mb-3 content-table">
+        <h4 class="ml-3">Lista de test no superado</h4>
+
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Resultado</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for c in query %}
+                <tr>
+                  <td>{{ c.descripcion }}</td>
+                  <td>{{ c.get_estado_display }}</td>
+                </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+{% endif %}
+
+{% if no_realizados %}
+    <div id="main-content">
+
+      <div class="bg-light p-3 mb-3 content-table">
+        <h4 class="ml-3">Lista de test no comprobados</h4>
+
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Resultado</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for c in no_realizados %}
+                <tr>
+                  <td>{{ c.descripcion }}</td>
+                  <td>No comprobado</td>
+                </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+{% endif %}
+
+<script type="text/javascript">
+
+function cancelar(){
+  data = $("form").serialize();
+  $.post("{% url 'cancelar_trato' id_producto=p.id %}", data, function(res){
+      location.href = res
+  });
+}
+
+function comprar(){
+  data = $("form").serialize();
+  $.post("{% url 'trato_compra' id_producto=p.id %}", data, function(res){
+      location.href = res
+  });
+}
+  function get_precio(){
+      data = $("form").serialize();
+      $.post("{% url 'calcular_precio_usado' id_modelo=p.modelo.id %} ", data, function(res){
+          $("input[name='precio_compra']").val(res)
+      });
+  }
+</script>
+
+
+{% endblock content %}

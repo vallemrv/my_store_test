@@ -1,0 +1,24 @@
+{% extends "base_admin.html" %}
+{% load admin_extras %}
+{% block content %}
+<div class="bg-light page-header d-flex justify-content-between ">
+  <h2>Categorias</h2>
+</div>
+
+<div class="bg-light p-3 mb-3" >
+  <div class="p-3">
+    <h3>{{mensaje}}</h3>
+  </div>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {% for field in form %}
+      <div class="form-group">
+        <label for="{{field.name}}">{{ field.label }}</label>
+        {{ field|addcss:"form-control" }}
+      </div>
+    {% endfor %}
+      <button type="submit" class="btn btn-primary">Enviar formulario</button>
+  </form>
+</div>
+
+{% endblock content %}

@@ -1,0 +1,167 @@
+<!--
+@Author: Manuel Rodriguez <valle>
+@Date:   18-Oct-2017
+@Email:  valle.mrv@gmail.com
+@Last modified by:   valle
+@Last modified time: 07-Dec-2017
+@License: Apache license vesion 2.0
+-->
+
+{% load filter_document %}
+<!DOCTYPE document SYSTEM "rml.dtd">
+<document filename="example_01.pdf">
+  <template leftMargin="40" title="{{title}}" showBoundary="no">
+    <!--this section contains elements of the document -->
+    <!--which are FIXED into position. -->
+    <pageTemplate id="main" pageSize="a4">
+      <pageGraphics>
+        <image file="templates/document/freakmedia-logo.jpg" x="40" y="700" mask='auto' width="250" preserveAspectRatio="1"/>
+        <image file="templates/document/abono_bakground.png" x="20" y="40" mask='auto' width="550" preserveAspectRatio="1"/>
+
+        <setFont name="Helvetica-Bold" size="10"/>
+        <drawString  x="320" y="780" >FREAKMEDIA</drawString >
+        <drawString  x="320" y="765" >14631732-Y</drawString >
+        <drawString  x="320" y="750" >CAMINO DE RONDA, 73</drawString >
+        <drawString  x="320" y="735" >18004, GRANADA</drawString >
+        <drawString  x="320" y="720" >www.freakmedia.es /// info@freakmedia.es </drawString >
+
+        <drawString  x="360" y="690" > SIGUENOS EN FACEBOOK: </drawString >
+        <image file="templates/document/facebook.png" x="360" y="660" mask='auto' width="25" preserveAspectRatio="1"/>
+        <drawString  x="390" y="670" > @FreakMediaGranada </drawString >
+
+
+        <setFont name="Helvetica-Bold" size="10"/>
+        <stroke color="black"/>
+        <fill color="gray"/>
+        <rect x="40" y="625" width="100" height="20"
+            fill="yes" stroke="yes" />
+        <rect x="140" y="625" width="210" height="20"
+            fill="yes" stroke="yes" />
+        <rect x="350" y="625" width="50" height="20"
+            fill="yes" stroke="yes" />
+        <rect x="400" y="625" width="50" height="20"
+            fill="yes" stroke="yes" />
+        <rect x="450" y="625" width="55" height="20"
+            fill="yes" stroke="yes" />
+        <rect x="505" y="625" width="60" height="20"
+            fill="yes" stroke="yes" />
+
+        <rect x="40" y="400" width="100" height="225"
+            fill="no" stroke="yes" />
+        <rect x="140" y="400" width="210" height="225"
+            fill="no" stroke="yes" />
+        <rect x="350" y="400" width="50" height="225"
+            fill="no" stroke="yes" />
+        <rect x="400" y="400" width="50" height="225"
+            fill="no" stroke="yes" />
+        <rect x="450" y="400" width="55" height="225"
+            fill="no" stroke="yes" />
+        <rect x="505" y="400" width="60" height="225"
+            fill="no" stroke="yes"/>
+
+        <rect x="460" y="370" width="105" height="20"
+            fill="yes" stroke="yes" />
+        <rect x="460" y="340" width="105" height="30"
+            fill="no" stroke="yes" />
+
+        <fill color="black"/>
+        <drawString  x="50" y="630">CODIGO</drawString >
+        <drawString  x="230" y="630" >DESCRIPCIÓN</drawString >
+        <drawString  x="360" y="630" >CANT. </drawString >
+        <drawString  x="410" y="630" >PUD. </drawString >
+        <drawString  x="460" y="630" >DTO (%) </drawString >
+        <drawString  x="510" y="630" >Total </drawString >
+
+        <drawString  x="500" y="376" >TOTAL </drawString >
+
+
+        <setFont name="Helvetica" size="10"/>
+
+        <place x="40" y="400" width="565" height="225">
+          {% if productos %}
+          <blockTable colWidths="100,210,50,50,55,60"  style="blocktablestyle1">
+            {% for p in productos %}
+            <tr>
+               <td> <para alignment="left">{{p.codigo_compra}}</para></td>
+               <td> <para alignment="left">{{p|detalle}}</para></td>
+               <td> <para alignment="right">{{p.can}}</para> </td>
+               <td> <para alignment="right">{{p.p_unidad}} </para></td>
+               <td> <para alignment="right">{{p.descuento}} </para></td>
+               <td> <para alignment="right">{{p|total:"REBU"}}</para></td>
+             </tr>
+            {% endfor %}
+          </blockTable>
+          {% endif %}
+        </place>
+
+       </pageGraphics>
+
+      <frame id="fecha" x1="40" y1="640" width="525" height="70"/>
+      <frame id="total_venta" x1="460" y1="340" width="105" height="30"/>
+      <frame id="forma_pago" x1="35" y1="370" width="250" height="25"/>
+      <frame id="cliente" x1="35" y1="265" width="390" height="100"/>
+
+    </pageTemplate>
+  </template>
+  <stylesheet>
+    <!--this section contains the STYLE information for -->
+    <!--the document, but there isn't any yet. The tags still -->
+    <!--have to be present, however, or the document won't compile.-->
+    <!-- A blockTableStyle tag for styling a table-->
+         <blockTableStyle id="blocktablestyle1">
+         <blockFont name="Courier-Bold"/>
+         <blockFont name="Helvetica-BoldOblique" size="8"/>
+         <blockTextColor colorName="green"/>
+         </blockTableStyle>
+               <paraStyle name="textstyle1"
+                         fontName="Helvetica"
+                         fontSize="9"
+                         textColor="blue"/>
+  </stylesheet>
+  <story>
+
+      <para fontSize="13">
+          <b>Fecha:</b> {{fecha}}
+      </para>
+        <spacer length="5"/>
+      <para fontSize="14">
+          <b>Nº Abono:</b> {{num_abono}}
+      </para>
+      <spacer length="4"/>
+      <para fontSize="10">
+          <b>de la factura num:</b> {{num_factura}}
+      </para>
+
+      <nextFrame name="total_venta"/>
+
+          <para alignment="center" fontSize="14">
+              <b>- {{total}} €</b>
+          </para>
+
+      <nextFrame name="forma_pago"/>
+
+          <para fontSize="10">
+              <b>Abono en:</b> {{forma_pago}}
+          </para>
+
+
+      <nextFrame name="cliente"/>
+          <para fontSize="12">
+              <b>Nombre:</b> {{nombre}}
+          </para>
+            <spacer length="4"/>
+          <para fontSize="12">
+              <b>DNI:</b> {{DNI}}
+          </para>
+            <spacer length="4"/>
+          <para fontSize="12">
+              <b>Domicilio:</b> {{domicilio}}
+          </para>
+          <spacer length="4"/>
+          <para fontSize="12">
+              <b>Telefono:</b> {{telefono}}
+          </para>
+
+
+  </story>
+</document>

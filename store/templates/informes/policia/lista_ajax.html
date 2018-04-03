@@ -1,0 +1,55 @@
+{% load admin_extras %}
+{% if query %}
+  <div id="content_main" class="bg-light p-3 mb-3 content-table">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Intervalo</th>
+          <th>Envidado</th>
+          <th class="text-center">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in query %}
+        <tr>
+          <td>{{ c.intervalo }}</td>
+          <td>{{ c|enviado }}</td>
+          <td class="text-center">
+            <a href="{% url 'ver_documento_policia' id=c.id %}"
+                class="btn btn-primary" >
+                <span class="fa fa-search"></span></a>
+            <a href="{% url 'get_documento_garantia' id_garantia=c.id %}"
+                class="btn btn-primary" data-toggle="collapse" data-target="#enviar_{{c.id}}"
+                aria-expanded="false" aria-controls="enviar_{{c.id}}">
+                <span class="fa fa-send"></span></a>
+            <button  class="btn btn-primary ml-1" data-toggle="collapse" data-target="#collapse{{c.id}}" aria-expanded="false" aria-controls="collapse{{c.id}}">
+              <span class="fa fa-trash"></span></button>
+          </td>
+        </tr>
+        <tr>
+         <td colspan="3">
+           <div  class="collapse text-right" id="collapse{{c.id}}">
+               <button onclick="$('#collapse{{c.id}}').collapse('hide');" class="btn btn-primary">Cancelar</button>
+               <a href="{% url 'rm_doc_policia' id=c.id %}" class="btn btn-warning">Borrar seguro</a>
+               <div class="clearfix"></div>
+           </div>
+           <div  class="collapse text-right mt-2" id="enviar_{{c.id}}">
+               <button onclick="$('#enviar_{{c.id}}').collapse('hide');" class="btn btn-primary">Cancelar</button>
+               <a href="{% url 'send_doc_policia' id=c.id %}" class="btn btn-warning">Enviar seguro</a>
+               <div class="clearfix"></div>
+           </div>
+         </td>
+       </tr>
+
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+    <div class="jumbotron jumbotron-fluid">
+      <div class="container pl-3">
+          <h1 class="display-3">Upps!</h1>
+          <p class="lead">No se ha encotrado ninguna coincidencia....</p>
+      </div>
+    </div>
+{% endif %}

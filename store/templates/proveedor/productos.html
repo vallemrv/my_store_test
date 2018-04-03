@@ -1,0 +1,66 @@
+{% extends "base_admin.html" %}
+{% load admin_extras %}
+{% block content %}
+<div class="bg-light page-header">
+  <h2 class="">Producto</h2>
+</div>
+<div class="bg-light p-3 mb-3 content-table">
+  <h2 class="">Modelo</h2>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>marca</th>
+        <th>precio</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>{{ modelo.nombre }}</td>
+        <td>{{ modelo.marca }}</td>
+        <td>{{ modelo.precio_usado }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="bg-light p-3 mb-3">
+  <div class="p-3">
+    <h3>{{titulo}}</h3>
+  </div>
+  {% if form_error %}
+    <div  class="alert alert-success alert-dismissable">
+      <button aria-hidden="true" data-dismiss="alert" class="close" type="button"> × </button>
+      {% for field, errors in form_error.items %}
+        {% for error in errors %}
+         <p>{{error}}</p>
+        {% endfor %}
+      {% endfor %}
+      </div>
+  {% endif %}
+  <form id='form_main' method="post">
+    <div class="row">
+      {% for field in form %}
+        <div class="form-group col-md-6">
+            <label for="{{field.name}}">{{ field.label }}</label>
+            {{ field|addcss:"form-control" }}
+        </div>
+      {% endfor %}
+    </div>
+    {% csrf_token %}
+    <div class="form-group" style="padding-top: 5px;">
+      <button  class="btn btn-primary" type="submit">Comprar</button>
+    </div>
+  </form>
+</div>
+<script type="text/javascript">
+
+     function get_precio(){
+         data = $("form").serialize();
+         $.post("{% url 'calcular_precio_usado' id_modelo=modelo.id %}", data, function(res){
+             $("input[name='precio_compra']").val(res)
+         });
+     }
+
+</script>
+{%endblock%}

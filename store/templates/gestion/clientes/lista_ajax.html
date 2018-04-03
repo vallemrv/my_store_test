@@ -1,0 +1,60 @@
+{% load admin_extras %}
+
+{% if query %}
+  <div class="bg-light p-3 mb-3 content-table">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>DNI</th>
+          <th>Nombre</th>
+          <th class="text-center">Acciones </th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in query %}
+        <tr>
+          <td>{{ c.DNI }}</td>
+          <td>{{ c.nombre_completo }}</td>
+
+          <td class="text-center">
+                <a href="{% url 'al_set_cliente' id_cliente=c.id %}" class="btn btn-primary">
+                    <span class="fa fa-check"></span></a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+  <div class="bg-light p-3 mb-3">
+      <div class="p-3">
+        <h3>Cliente Nuevo</h3>
+      </div>
+      <form id="form_cliente" class="my-2 my-lg-0" method="post" onsubmit="save_cliente(); return false">
+          {% csrf_token %}
+        <div class="row">
+          {% for field in form %}
+            <div class="form-group col-md-6">
+              <label for="{{field.name}}">{{ field.label }}</label>
+              {{ field|addcss:"form-control" }}
+            </div>
+          {% endfor %}
+        </div>
+        <div class="form-group" style="padding-top: 5px;">
+          <button type="submit" class="btn btn-primary">Enviar</button>
+        </div>
+     </form>
+  </div>
+
+  <script type="text/javascript">
+   function save_cliente(){
+      cliente = $("#form_cliente").serialize();
+      $.post("{% url 'save_cliente' %}", cliente, function(res){
+          if (res.success){
+            location.href = "{% url 'al_set_cliente_none'  %}" + res.id +"/"
+         }
+      });
+      return false;
+    }
+  </script>
+{% endif %}

@@ -1,0 +1,65 @@
+{% extends "base_admin.html" %}
+{% load admin_extras %}
+{% block content %}
+
+<div class="d-flex justify-content-between bg-light page-header">
+    <h1>Elegir modelo</h1>
+    <form id="form_find" onsubmit="get_modelos(); return false" class="form-inline my-2 my-lg-0" method="post">
+        {% csrf_token %}
+        <input class="form-control mr-sm-2" type="text" name="filter" placeholder="Buscar" aria-label="Search">
+        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Buscar</button>
+        <button class="btn btn-primary ml-2" type="button" data-toggle="collapse" data-target="#modelo_nuevo" aria-expanded="false" aria-controls="modelo_nuevo">
+            <span class="fa fa-plus"></span>
+        </button>
+        <a href="{% url 'salir_compra' %} " class="btn btn-primary ml-2">
+            <span class="fa fa-sign-out"></span>
+        </a>
+    </form>
+</div>
+
+  <div id="modelo_nuevo" class="bg-light p-3 mb-3 collapse">
+    <h4>Modelo nuevo</h4>
+    <form id="form_add" onsubmit="add_modelo(); return false" method="post">
+        {% csrf_token %}
+        <div class="row">
+            {% for field in form %}
+              <div class="form-group col-md-6">
+                <label for="{{field.name}}">{{ field.label }}</label>
+                {{ field|addcss:"form-control" }}
+              </div>
+            {% endfor %}
+          </div>
+          <button type="submit" class="btn btn-primary">Enviar formulario</button>
+    </form>
+  </div>
+
+  <div id="content_main" class="bg-light p-3 mb-3 collapse">
+
+  </div>
+
+
+
+
+<script type="text/javascript">
+
+  function add_modelo(){
+    var form = $("#form_add").serialize();
+    $.post("{% url 'save_modelo' %}", form, function(res){
+      if (res.success){
+         var url = "{% url 'cp_productos_proveedor' id_modelo=1 %}"
+         location.href = url.replace("1", res.id)
+      }
+    });
+  }
+
+  function get_modelos(){
+    datos = $("#form_find").serialize();
+    $.post("{% url 'cp_lista_modelos_proveedor' %}", datos, function(res){
+         $("#content_main").removeClass("collapse")
+         $("#content_main").empty().append(res)
+
+    });
+    return false;
+  }
+</script>
+{% endblock content %}

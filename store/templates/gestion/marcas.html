@@ -1,0 +1,66 @@
+{% extends "base_admin.html" %}
+{% load admin_extras %}
+{% block content %}
+<div class="bg-light page-header d-flex justify-content-between ">
+  <h2>Marcas</h2>
+  {% if not 'Editar' in mensaje %}
+    <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+          Agregar
+        </button>
+  {% endif %}
+</div>
+
+<div class="bg-light p-3 mb-3 {% if not 'Editar' in mensaje %} collapse {% endif %}" id="collapseExample">
+  <div class="p-3">
+    <h3>{{mensaje}}</h3>
+  </div>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+      <div class="row">
+        {% for field in form %}
+          <div class="form-group col-md-6">
+            <label for="{{field.name}}">{{ field.label }}</label>
+            {{ field|addcss:"form-control" }}
+          </div>
+        {% endfor %}
+      </div>
+
+      <button type="submit" class="btn btn-primary">Enviar formulario</button>
+  </form>
+</div>
+
+{% if marcas %}
+  <div class="bg-light p-3 mb-3 content-table">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Descripcion</th>
+          <th class="text-center">Logo</th>
+          <th class="text-center">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in marcas %}
+        <tr>
+          <td>{{ c.nombre }}</td>
+          <td>{{ c.descripcion }}</td>
+          <td>
+            <div class="text-center">
+              <img class="img-marcas img-fluid" src="/media/{{ c.logo }}" alt="Generic placeholder image">
+            </div>
+          </td>
+          <td class="text-center">
+            <a href="{% url 'marcas' id_marca=c.id %}" class="btn btn-primary ">
+              <span class="fa fa-edit"></span></a>
+            <a href="{% url 'rm_marcas' id_marca=c.id %}" class="btn btn-primary">
+                <span class="fa fa-trash"></span></a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endif %}
+
+{% endblock content %}

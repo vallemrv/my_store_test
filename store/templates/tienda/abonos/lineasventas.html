@@ -1,0 +1,53 @@
+{% load filter_document %}
+<div class="bg-light p-3 mb-3 content-table">
+  {% if lineas %}
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Código</th>
+              <th>Descripción</th>
+              <th>Can</th>
+              <th>Importe</th>
+              <th>Des</th>
+              <th>Total</th>
+              <th></th>
+              <colgroup>
+                <col style="width:20%">
+                <col style="width:40%">
+                <col style="width:10%">
+                <col style="width:10%">
+                <col style="width:10%">
+                <col style="width:10%">
+              </colgroup>
+            </tr>
+          </thead>
+          <tbody>
+            {% for l in lineas %}
+            <tr id="linea_{{l.pk}}">
+              <td>{{ l.codigo_compra }}</td>
+              <td>{{ l.detalle }}</td>
+              <td>{{ l.can }}</td>
+              <td>{{ l.p_unidad }}</td>
+              <td>{{ l.descuento }}</td>
+              <td>{{ l|total:"REBU" }}</td>
+              <td class="text-center">
+                  <button onclick="set_linea('{{l.codigo_compra}}', '{{l.detalle}}', '{{l.can}}', '{{l.descuento}}',
+                                             '{{l.p_unidad}}', '{{l.ns_imei}}', {{l.pk}}); return false;"
+                                             class="btn btn-primary">
+                      <span class="fa fa-check"></span>
+                    </button>
+              </td>
+            </tr>
+            {% endfor %}
+
+          </tbody>
+        </table>
+  {% else %}
+  <div class="jumbotron jumbotron-fluid">
+    <div class="container pl-3">
+        <h1 class="display-3">Factura abonada</h1>
+        <p class="lead">Ya no queda productos abonar, o la factura no es del cliente</p>
+    </div>
+  </div>
+  {% endif %}
+</div>

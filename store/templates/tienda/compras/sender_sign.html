@@ -1,0 +1,11 @@
+{% extends 'base_admin.html' %}
+
+{% block content %}
+  <div class="jumbotron jumbotron-fluid">
+    <div class="text-center">
+        <i class="fa fa-envelope" style="font-size:245px; " aria-hidden="true"></i>
+        <p class="mt-2">Documento de firma envidao {{datetime.now}}</p>
+        <a class="btn btn-primary mt-2" onclick="window.history.back();">Volver</a>
+    </div>
+  </div>
+{% endblock content %}

@@ -1,0 +1,47 @@
+{% extends "base_admin.html" %}
+{% load admin_extras %}
+{% block content %}
+
+<div class="bg-light page-header">
+  <h1>Finalizar compra</h1>
+</div>
+
+<div class="bg-light p-3 mb-3">
+  <div class="p-3">
+    <h3>{{titulo}}</h3>
+  </div>
+  {% if form_error %}
+    <div  class="alert alert-success alert-dismissable">
+      <button aria-hidden="true" data-dismiss="alert" class="close" type="button"> × </button>
+      {% for field, errors in form_error.items %}
+        {% for error in errors %}
+         <p>{{error}}</p>
+        {% endfor %}
+      {% endfor %}
+      </div>
+  {% endif %}
+  <form id='form_main' method="post" enctype="multipart/form-data" action="{% url 'finalizar_compra_proveedor' %}">
+    <div class="row">
+      <div class="form-group col-md-6">
+        <label  for="producto_id">Producto</label>
+         <input type="text" class="form-control" disabled  value="{{producto_str}}"/>
+       </div>
+      {% for field in form %}
+        <div class="form-group col-md-6">
+          <label  for="{{field.name}}">{{ field.label }}</label>
+          {% if field.name == "producto" %}
+                {{field|addattrs:'{"class": "form-control", "disabled": "True" }'}}
+          {% else %}
+              {{ field|addcss:"form-control"}}
+          {% endif %}
+         </div>
+      {% endfor %}
+    </div>
+    {% csrf_token %}
+    <div class="form-group" style="padding-top: 5px;" >
+         <button type="submit" class="btn btn-primary">Finalizar</button>
+    </div>
+  </form>
+</div>
+
+{% endblock content %}

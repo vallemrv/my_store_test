@@ -1,0 +1,28 @@
+{% extends "base_admin.html" %}
+{% load admin_extras %}
+{% block content %}
+<div class="bg-light page-header d-flex justify-content-between">
+      <h2 class="">Lista abonos</h2>
+      <form onsubmit="get_facturas(); return false;" class="form-inline my-2 my-lg-0" method="post">
+          {% csrf_token %}
+          <input class="form-control mr-sm-2" type="text" name="filter" placeholder="Buscar" aria-label="Search">
+          <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Buscar</button>
+      </form>
+</div>
+
+<div id="main-content">
+  {% include "tienda/abonos/listado_ajax.html" %}
+</div>
+
+
+<script type="text/javascript">
+
+function get_facturas(){
+   datos = $("form").serialize();
+   $.post("{% url 'find_abonos'  %}", datos, function(res){
+      $("#main-content").empty().append(res)
+   })
+}
+</script>
+
+{% endblock content %}

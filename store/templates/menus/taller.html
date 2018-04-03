@@ -1,0 +1,31 @@
+{% extends "base_admin.html" %}
+
+{% block content %}
+  <div class="bg-light page-header">
+    <h2>Taller</h2>
+  </div>
+
+<div class="bg-light p-3 mb-3">
+  <div class="row">
+        <div class="col-6 col-md-4 col-lg-3">
+          <a href="{% url 'lista_productos' estado='RP' %}" class="btn btn-primary btn-inicio">Para reparar</a>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3">
+          <a href="{% url 'lista_productos'  estado='OS' %}" class="btn btn-primary btn-inicio">Para testear</a>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3">
+          <a href="{% url 'lista_productos' estado='PS' %}" class="btn btn-primary btn-inicio">Presupuestar</a>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3">
+          <a href="{% url 'actuaciones'  %}" class="btn btn-primary btn-inicio">Actuaciones</a>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3">
+          <a href="{% url 'tipo_testeo'  %}" class="btn btn-primary btn-inicio">Lista testeo</a>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3">
+          <a href="{% url 'lista_productos' estado='OK'%}" class="btn btn-primary btn-inicio">Reparados</a>
+        </div>
+      </div>
+</div>
+
+{% endblock content %}

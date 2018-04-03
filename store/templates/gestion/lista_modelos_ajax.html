@@ -1,0 +1,37 @@
+{% load admin_extras %}
+{% if modelos %}
+  <div id="content_main" class="bg-light p-3 mb-3 content-table">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Marca</th>
+          <th>Nombre</th>
+          <th>Precio usado</th>
+          <th class="text-center">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in modelos %}
+        <tr>
+          <td>{{ c.marca }}</td>
+          <td>{{ c.nombre }}</td>
+          <td>{{ c.precio_usado }}</td>
+          <td class="text-center">
+            <a href="{% url 'modelos' id_modelo=c.id %}" class="btn btn-primary ">
+              <span class="fa fa-edit"></span></a>
+            <a href="{% url 'rm_modelos' id_modelo=c.id %}" class="btn btn-primary">
+                <span class="fa fa-trash"></span></a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+    <div class="jumbotron jumbotron-fluid">
+      <div class="container pl-3">
+          <h1 class="display-3">Upps!</h1>
+          <p class="lead">No se ha encotrado ninguna coincidencia....</p>
+      </div>
+    </div>
+{% endif %}

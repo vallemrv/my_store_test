@@ -1,0 +1,74 @@
+{% extends "base_admin.html" %}
+
+{% block content %}
+  <div class="bg-light  page-header">
+    <div class="row">
+      <div class="col-12 col-md-7 ">
+        <h2>Tienda</h2>
+      </div>
+      <div class="col-12 col-md-5 ">
+        <div class="float-md-right d-inline">
+          <form onsubmit="get_productos(); return false;" class="form-inline my-2 my-lg-0" method="post">
+              {% csrf_token %}
+              <input class="form-control mr-sm-2" type="text" name="filter" placeholder="Buscar IMEI" aria-label="Search">
+              <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Buscar</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<div id="main-content" class="bg-light p-3 mb-3">
+  <div class="row">
+        <div class="col-6 col-md-4 col-lg-3">
+          <a href="{% url 'ticket'  %}" class="btn btn-primary btn-inicio">V. Ticket</a>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3">
+          <a href="{% url 'ventas_find_cliente'  %} " class="btn btn-primary btn-inicio"><span>V. Factura</span> </a>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3">
+          <a href="{% url 'find_cliente' %} " class="btn btn-primary btn-inicio">Comprar</a>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3">
+          <a href="{% url 'presupuesto_find_cliente' %} " class="btn btn-primary btn-inicio">Reparar</a>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3">
+          <a href="{% url 'abonos_find_cliente' %}" class="btn btn-primary btn-inicio">Abonar</a>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3">
+          <a href="{% url 'lista_doc_testeo' %}" class="btn btn-primary btn-inicio">Doc. Testeo</a>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3">
+          <a href="{% url 'lista_productos' estado='OK'%}" class="btn btn-primary btn-inicio">Reparados</a>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3">
+          <a href="{% url 'lista_productos' estado='TD'%}" class="btn btn-primary btn-inicio">Testeados</a>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3">
+          <a href="{% url 'lista_productos' estado='PS'%}" class="btn btn-primary btn-inicio">Presupuestar</a>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3">
+          <a href="{% url 'listado_facturas' %}" class="btn btn-primary btn-inicio">Mod. Facturas</a>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3">
+          <a href="{% url 'listado_compras' %}" class="btn btn-primary btn-inicio">Mod. Compras</a>
+        </div>
+
+        <div class="col-6 col-md-4 col-lg-3">
+          <a href="{% url 'en_construccion' %}" class="btn btn-primary btn-inicio">Facturas Pk</a>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    function get_productos(){
+       datos = $("form").serialize();
+       $.post("{% url 'lista_productos' estado='all' %}", datos, function(res){
+          $("#main-content").empty().append(res)
+       })
+    }
+
+</script>
+
+{% endblock content %}

@@ -1,0 +1,43 @@
+
+{% load admin_extras %}
+
+{% if query %}
+  <div class="bg-light p-3 mb-3 content-table">
+    <h2 class="">Lista de modelos</h2>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>marca</th>
+          <th>precio</th>
+          <th class="text-center">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in query %}
+        <tr>
+          <td>{{ c.nombre }}</td>
+          <td>{{ c.marca }}</td>
+          <td>{{ c.precio_usado }}</td>
+          <td class="d-flex justify-content-around">
+            {% if change %}
+              <button onclick="set_modelo({{c.id}}, '{{c.nombre}}')" class="btn btn-primary">
+                  <span class="fa fa-check"></span></button>
+            {% else %}
+              <a href="{% url 'cp_productos' id_modelo=c.id %} " class="btn btn-primary">
+                  <span class="fa fa-check"></span></a>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+    <div class="jumbotron jumbotron-fluid">
+      <div class="container pl-3">
+          <h1 class="display-3">Upps!</h1>
+          <p class="lead">No se ha encotrado ninguna coincidencia....</p>
+      </div>
+    </div>
+{% endif %}

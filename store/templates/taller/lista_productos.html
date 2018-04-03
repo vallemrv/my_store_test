@@ -1,0 +1,46 @@
+{% extends "base_admin.html" %}
+{% load admin_extras %}
+{% block content %}
+<div class="bg-light page-header">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="">Lista Productos</h2>
+    </div>
+    <div class="col-md-6">
+      <form onsubmit="get_productos(); return false;" class="form-inline my-2 my-lg-0" method="post">
+          {% csrf_token %}
+          <select onchange="get_productos_estado(); return false" name="choices" class="form-control mr-2">
+              <option value="">Todos</option>
+            <option value="RP">En reparacion</option>
+            <option value="OS">Testeo</option>
+          </select>
+          <input class="form-control mr-sm-2" type="text" name="filter" placeholder="Buscar" aria-label="Search">
+          <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Buscar</button>
+      </form>
+    </div>
+  </div>
+
+</div>
+
+<div id="main-content">
+  {% include "taller/lista_productos_ajax.html" %}
+</div>
+
+
+<script type="text/javascript">
+function get_productos_estado(){
+   datos = $("form").serialize();
+   $.post("{% url 'tl_lista_productos_estado'  %} ", datos, function(res){
+      $("#main-content").empty().append(res)
+   });
+   return false;
+}
+function get_productos(){
+   datos = $("form").serialize();
+   $.post("{% url 'tl_lista_productos' %} ", datos, function(res){
+      $("#main-content").empty().append(res)
+   })
+}
+</script>
+
+{% endblock content %}

@@ -1,0 +1,55 @@
+{% extends "base_admin.html" %}
+{% load admin_extras %}
+{% block content %}
+<div class="bg-light page-header d-flex justify-content-between ">
+  <h2>Garantias</h2>
+  <div class="d-inline">
+    <form id="form_find" onsubmit="get_modelos(); return false" class="form-inline my-2 my-lg-0" method="post">
+        {% csrf_token %}
+        <input class="form-control mr-sm-2" type="text" name="filter" placeholder="Buscar" aria-label="Search">
+        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Buscar</button>
+        {% if not 'Editar' in mensaje %}
+          <button class="btn btn-primary ml-2" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                <span class="fa fa-plus"></span>
+              </button>
+        {% endif %}
+    </form>
+  </div>
+</div>
+
+<div class="bg-light p-3 mb-3 {% if not 'Editar' in mensaje %} collapse {% endif %}" id="collapseExample">
+  <div class="p-3">
+    <h3>{{mensaje}}</h3>
+  </div>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="row">
+        {% for field in form %}
+          <div class="form-group col-md-6">
+            <label for="{{field.name}}">{{ field.label }}</label>
+            {{ field|addcss:"form-control" }}
+          </div>
+        {% endfor %}
+      </div>
+      <button type="submit" class="btn btn-primary">Enviar formulario</button>
+  </form>
+</div>
+
+
+  <div id="content_main" class="bg-light p-3 mb-3 content-table">
+     {% include "tienda/garantias/lista_ajax.html" %}
+  </div>
+
+
+<script type="text/javascript">
+function get_modelos(){
+  datos = $("#form_find").serialize();
+  $.post("{% url 'lista_garantias' %}", datos, function(res){
+      $("#content_main").html(res)
+
+  });
+  return false;
+}
+</script>
+
+{% endblock content %}

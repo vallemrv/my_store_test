@@ -1,0 +1,82 @@
+{% extends "base_admin.html" %}
+
+{% block content %}
+{% load admin_extras %}
+<div class="bg-light page-header">
+  <div class="row">
+      <div class="col-10">
+        <h2>Presupuesto</h2>
+      </div>
+      <div class="col-2">
+          <a href="{% url 'salir_presupuesto' %} " class="btn btn-primary">Volver</a>
+      </div>
+  </div>
+
+
+</div>
+
+<div class="bg-light p-3 mb-3">
+    <div class="p-3">
+      <h3>Datos de la reparacion</h3>
+    </div>
+    <form id='form_main' method="post">
+      {% csrf_token %}
+      <div class="row">
+        {% for field in form %}
+          {% if field.name == "ns_imei"  %}
+              <div class="form-group col-md-6">
+                <label for="{{field.name}}">{{ field.label }}</label>
+                {{ field|addcss:"form-control" }}
+                <button type="button" onclick="generar_codigo(); return false;" name="button" class="btn btn-warning mt-2">
+                  No se puede leer
+                </button>
+              </div>
+          {% else %}
+              <div class="form-group col-md-6">
+                <label for="{{field.name}}">{{ field.label }}</label>
+                {{ field|addcss:"form-control" }}
+              </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+      <div class="form-group" style="padding-top: 5px;">
+        <button onclick="valorar_tecnico(); return false;" class="btn btn-primary">Valorar un técnico</button>
+        <button onclick="presupuestar(); return false;" class="btn btn-success">Presupuestar</button>
+      </div>
+   </form>
+</div>
+
+
+<script type="text/javascript">
+
+  function generar_codigo(){
+    var date = new Date();
+    var code = (date.getFullYear()+""+date.getMonth()+""+date.getDate()+
+    date.getHours()+date.getMinutes()+date.getSeconds()+date.getMilliseconds());
+     $("input[name='ns_imei']").val(code)
+  }
+
+  function valorar_tecnico(){
+     datos = $("form").serialize()
+     $.post("{% url 'save_presupuesto'  %} ", datos, function(res){
+         if (res.result){
+           location.href = "{% url 'tienda'  %} "
+         }
+     })
+
+    return false;
+  }
+
+  function presupuestar(){
+    datos = $("form").serialize()
+    $.post("{% url 'save_presupuesto'  %}", datos, function(res){
+        if (res.result){
+          location.href = "{% url 'presupuesto'  %}"
+        }
+    })
+
+    return false;
+  }
+</script>
+
+{% endblock content %}

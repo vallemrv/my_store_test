@@ -1,0 +1,41 @@
+{% load admin_extras %}
+
+{% if facturas %}
+  <div class="bg-light p-3 mb-3 content-table">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Modelo</th>
+          <th>NS o imei</th>
+          <th>Estado</th>
+          <th class="text-center">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in query %}
+        <tr>
+          <td>{{ c.modelo }}</td>
+          <td>{{ c.ns_imei }}</td>
+          <td>{{ c.get_estado_display }}</td>
+          <td class="d-flex justify-content-around">
+            {% if c.estado == "OS" %}
+              <a href="{% url 'testeo' id_producto=c.id %}" class="btn btn-primary ">
+                <span class="fa fa-search"></span></a>
+            {% elif c.estado == "RP" %}
+              <a href="{% url 'get_historial' id_producto=c.id %}" class="btn btn-primary ">
+                <span class="fa fa-search"></span></a>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+    <div class="jumbotron jumbotron-fluid">
+      <div class="container pl-3">
+          <h1 class="display-3">Upps!</h1>
+          <p class="lead">No se ha encotrado ninguna coincidencia....</p>
+      </div>
+    </div>
+{% endif %}

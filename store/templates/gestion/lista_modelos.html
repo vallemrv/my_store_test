@@ -1,0 +1,62 @@
+
+{% load admin_extras %}
+
+
+{% if query %}
+  <div class="bg-light p-3 mb-3 content-table">
+    <h2 class="">Lista de modelos</h2>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>marca</th>
+          <th>precio</th>
+          <th class="text-center">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in query %}
+        <tr>
+          <td>{{ c.nombre }}</td>
+          <td>{{ c.marca }}</td>
+          <td>{{ c.precio_usado }}</td>
+          <td class="d-flex justify-content-around">
+            <a href="{% url 'al_set_modelo' id_modelo=c.id %}" class="btn btn-primary">
+                <span class="fa fa-check"></span></a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+    <div class="bg-light p-3 mb-3" id="collapseExample">
+      <div class="p-3">
+        <h3>Modelo nuevo</h3>
+      </div>
+      <form method="post" id="form_modelo" onsubmit="save_modelo(); return false;">
+        {% csrf_token %}
+        <div class="row">
+            {% for field in form %}
+              <div class="form-group col-md-6">
+                <label for="{{field.name}}">{{ field.label }}</label>
+                {{ field|addcss:"form-control" }}
+              </div>
+            {% endfor %}
+          </div>
+          <button type="submit" class="btn btn-primary">Enviar formulario</button>
+      </form>
+    </div>
+
+    <script type="text/javascript">
+        function save_modelo(){
+            modelo = $("#form_modelo").serialize();
+            $.post("{% url 'save_modelo' %}", modelo, function(res){
+               if (res.success){
+                  location.href = "{% url 'al_set_modelo' %}"+res.id+"/"
+               }
+            });
+            return false;
+        }
+    </script>
+{% endif %}

@@ -1,0 +1,340 @@
+<!--
+@Author: Manuel Rodriguez <valle>
+@Date:   18-Oct-2017
+@Email:  valle.mrv@gmail.com
+@Last modified by:   valle
+@Last modified time: 17-Dec-2017
+@License: Apache license vesion 2.0
+-->
+
+{% load filter_document %}
+<!DOCTYPE document SYSTEM "rml.dtd">
+<document filename="example_01.pdf">
+  <template leftMargin="40" title="{{title}}" showBoundary="no">
+    <!--this section contains elements of the document -->
+    <!--which are FIXED into position. -->
+    <pageTemplate id="main" pageSize="a4">
+      <pageGraphics>
+        <image file="templates/document/freakmedia-logo.jpg" x="40" y="700" mask='auto' width="250" preserveAspectRatio="1"/>
+        <stroke color="black"/>
+        <rect x="38" y="165" width="520" height="380"
+            fill="no" stroke="yes" round="0.15 in"/>
+        <lines> 38 448 558 448</lines>
+        <lines> 38 425 558 425</lines>
+        <setFont name="Helvetica-Bold" size="10"/>
+        <drawString  x="130" y="150" >IVA NO APLICABLE SEGÚN REGIMEN ESPECIAL DE BIENES USADOS</drawString >
+        <setFont name="Helvetica" size="10"/>
+        {% if "firmas/compras/"|file_exist:compra.firma %}
+          <image file="firmas/compras/{{compra.firma}}" x="370" y="170" height='150' mask='auto' preserveAspectRatio="yes"/>
+        {% endif %}
+       </pageGraphics>
+
+      <frame id="1" x1="35" y1="545" width="525" height="150"/>
+      <frame id="2" x1="50" y1="450" width="400" height="90"/>
+      <frame id="3" x1="50" y1="425" width="400" height="25"/>
+      <frame id="4" x1="50" y1="360" width="220" height="60"/>
+      <frame id="5" x1="300" y1="360" width="220" height="60"/>
+      <frame id="6" x1="50" y1="290" width="500" height="60"/>
+      <frame id="7" x1="50" y1="130" width="230" height="150"/>
+      <frame id="8" x1="300" y1="180" width="230" height="100"/>
+      <frame id="9" x1="35" y1="50" width="525" height="100"/>
+
+    </pageTemplate>
+     {% if venta %}
+      <pageTemplate id="factura" pageSize="a4">
+         <pageGraphics>
+        <image file="templates/document/freakmedia-logo.jpg" x="40" y="700" mask='auto' width="250" preserveAspectRatio="1"/>
+
+        <setFont name="Helvetica-Bold" size="10"/>
+        <drawString  x="320" y="780" >FREAKMEDIA</drawString >
+        <drawString  x="320" y="765" >14631732-Y</drawString >
+        <drawString  x="320" y="750" >CAMINO DE RONDA, 73</drawString >
+        <drawString  x="320" y="735" >18004, GRANADA</drawString >
+        <drawString  x="320" y="720" >www.freakmedia.es /// info@freakmedia.es </drawString >
+
+        <drawString  x="360" y="690" > SIGUENOS EN FACEBOOK: </drawString >
+        <image file="templates/document/facebook.png" x="360" y="660" mask='auto' width="25" preserveAspectRatio="1"/>
+        <drawString  x="390" y="670" > @FreakMediaGranada </drawString >
+
+
+        <setFont name="Helvetica-Bold" size="10"/>
+        <stroke color="black"/>
+        <fill color="gray"/>
+        <rect x="40" y="625" width="100" height="20"
+            fill="yes" stroke="yes" />
+        <rect x="140" y="625" width="210" height="20"
+            fill="yes" stroke="yes" />
+        <rect x="350" y="625" width="50" height="20"
+            fill="yes" stroke="yes" />
+        <rect x="400" y="625" width="50" height="20"
+            fill="yes" stroke="yes" />
+        <rect x="450" y="625" width="55" height="20"
+            fill="yes" stroke="yes" />
+        <rect x="505" y="625" width="60" height="20"
+            fill="yes" stroke="yes" />
+
+        <rect x="40" y="400" width="100" height="225"
+            fill="no" stroke="yes" />
+        <rect x="140" y="400" width="210" height="225"
+            fill="no" stroke="yes" />
+        <rect x="350" y="400" width="50" height="225"
+            fill="no" stroke="yes" />
+        <rect x="400" y="400" width="50" height="225"
+            fill="no" stroke="yes" />
+        <rect x="450" y="400" width="55" height="225"
+            fill="no" stroke="yes" />
+        <rect x="505" y="400" width="60" height="225"
+            fill="no" stroke="yes"/>
+
+        <rect x="460" y="370" width="105" height="20"
+            fill="yes" stroke="yes" />
+        <rect x="460" y="340" width="105" height="30"
+            fill="no" stroke="yes" />
+
+        <fill color="black"/>
+        <drawString  x="50" y="630">CODIGO</drawString >
+        <drawString  x="230" y="630" >DESCRIPCIÓN</drawString >
+        <drawString  x="360" y="630" >CANT. </drawString >
+        <drawString  x="410" y="630" >PUD. </drawString >
+        <drawString  x="460" y="630" >DTO (%) </drawString >
+        <drawString  x="510" y="630" >Total </drawString >
+
+        <drawString  x="500" y="376" >TOTAL </drawString >
+
+
+        <setFont name="Helvetica" size="10"/>
+
+        <place x="40" y="400" width="565" height="225">
+          {% if venta.productos %}
+          <blockTable colWidths="100,210,50,50,55,60"  style="blocktablestyle1">
+            {% for p in venta.productos %}
+            <tr>
+               <td> <para alignment="left" >{{p.codigo_compra}}</para></td>
+               <td> <para alignment="left">{{p|detalle}}</para></td>
+               <td> <para alignment="right">{{p.can}}</para> </td>
+               <td> <para alignment="right"> {{p|p_unidad:regimen}} </para></td>
+               <td> <para alignment="right"> {{p.descuento}} </para></td>
+               <td> <para alignment="right"> {{p|total:regimen}} </para></td>
+             </tr>
+            {% endfor %}
+          </blockTable>
+          {% endif %}
+        </place>
+
+       </pageGraphics>
+
+          <frame id="fecha" x1="35" y1="650" width="525" height="50"/>
+          <frame id="total_venta" x1="460" y1="340" width="105" height="30"/>
+          {% if entrega > 0 %}
+            <frame id="texto_entrega" x1="400" y1="310" width="125" height="30"/>
+            <frame id="texto_devolver" x1="400" y1="295" width="125" height="30"/>
+            <frame id="entrega" x1="430" y1="310" width="125" height="30"/>
+            <frame id="devolver" x1="430" y1="295" width="125" height="30"/>
+          {% endif %}
+          <frame id="forma_pago" x1="35" y1="370" width="250" height="25"/>
+          {% if regimen == 'REBU' %}
+                <frame id="IVA" x1="280" y1="370" width="250" height="25"/>
+          {% else %}
+               <frame id="IVA" x1="200" y1="365" width="300" height="30"/>
+          {% endif %}<frame id="cliente" x1="35" y1="265" width="390" height="100"/>
+          <frame id="garantia" x1="35" y1="50" width="525" height="210"/>
+      </pageTemplate>
+     {% endif  %}
+  </template>
+  <stylesheet>
+    <!--this section contains the STYLE information for -->
+    <!--the document, but there isn't any yet. The tags still -->
+    <!--have to be present, however, or the document won't compile.-->
+    <blockTableStyle id="blocktablestyle1">
+    <blockFont name="Courier-Bold"/>
+    <blockFont name="Helvetica-BoldOblique" size="8"/>
+    <blockTextColor colorName="green"/>
+    </blockTableStyle>
+
+  </stylesheet>
+  <story  firstPageTemplate="main">
+    <para fontSize="13">
+      <b>Samuel Jesús Vallecillos Marcos</b>, que ejerce la actividad mercantil de COMPRA-VETA
+      en el establecimentio FreakMedia, con domicilio en
+      <b> camino de ronda 73, Granada </b>
+       según lo esablecido
+       en el Art 30 del Real Decreto 3390/1981 10, de Dicembre, ha registrado la sigiente operacion:
+    </para>
+    <spacer length="16"/>
+    <para fontSize="13">
+      <b>Fecha:</b> {{compra.fecha}}
+    </para>
+    <spacer length="5"/>
+    <para fontSize="13">
+      <b>Codigo compra:</b> {{compra.codigo_compra}}
+    </para>
+    <spacer length="5"/>
+    <para fontSize="13">
+      <b>Nº Factura:</b> {{compra.num_factura}}
+    </para>
+    <nextFrame/>
+    <para fontSize="12">
+       <b>Nombre:</b> {{compra.nombre}}
+    </para>
+    <spacer length="4"/>
+    <para fontSize="12">
+        <b>DNI:</b> {{compra.DNI}}
+    </para>
+    <spacer length="4"/>
+    <para fontSize="12">
+        <b>Domicilio:</b> {{compra.domicilio}}
+    </para>
+    <spacer length="4"/>
+    <para fontSize="12">
+      <b>Telefono:</b> {{compra.telefono}}
+    </para>
+    <nextFrame/>
+    <para >
+         DESCRIPCIÓN DEL PRODUCTO
+    </para>
+    <nextFrame/>
+    <para fontSize="13">
+      <b>MODELO:</b> {{compra.modelo}}
+    </para>
+    <para fontSize="13">
+      <b>PRECIO:</b> {{compra.precio}}
+    </para>
+    <nextFrame/>
+    <para fontSize="13">
+      <b>NS o IMEI:</b> {{compra.ns_imei}}
+    </para>
+    <nextFrame/>
+    <para >
+          DECLARO QUE LOS OBJETOS AQUI SEÑALADOS SON DE MI PROPIEDAD, SOY MAYOR DE EDAD Y
+          DOY MI CONFIORMIDAD PARA SU COMPRA-VENTA
+    </para>
+    <nextFrame/>
+    <para >
+        COMPRADOR:
+    </para>
+    <illustration width="100" height="100" borderStrokeWidth="1" borderStrokeColor="black">
+         <!-- x and y coordinates are from the bottom left corner -->
+         <!-- of the containing illustration -->
+         {% if compra.firma_freak %}
+          <image file="static/media/{{compra.firma_freak}}" x="20" y="20"  width="150" height="150"/>
+         {% endif %}
+    </illustration>
+    <nextFrame/>
+    <para >
+       VENDEDOR:
+    </para>
+    <nextFrame/>
+    <para >
+        De conformidad con lo establecido en el Art. 5 de la Ley Orgánica 15/1999 de diciembre de
+            Protección de Datos de Carácter Personal, sus datos ha sido incorporados a un fichero de responsabilidad de FREAKMEDIA.
+            La finalidad del tratamiento es la de gestionar de forma adecuada la prestación del servicio que nos ha requerido.
+            Asimismo estos datos no serán cedidos a terceros, salvo las cesiones legalmente permitidas.
+            Podrá ejercitar su derechos de acceso, restificación, cancelación
+            y oposición en la sigiente dirección: Camino de rodan, 73, 18004 Granada;
+            o bien remitiendo un correo electrónico a freakmedia@gmail.com
+
+    </para>
+    {% if venta %}
+    <setNextTemplate name="factura"/>
+    <nextFrame/>
+
+
+        <para fontSize="13">
+            <b>Fecha:</b> {{venta.fecha}}
+        </para>
+          <spacer length="5"/>
+        <para fontSize="13">
+            <b>Nº Factura:</b> {{venta.num_factura}}
+        </para>
+        <nextFrame name="total_venta"/>
+
+            <para alignment="center" fontSize="14">
+                <b>{{venta.total}} €</b>
+            </para>
+
+            {% if entrega > 0 %}
+            <nextFrame name="texto_entrega"/>
+                <para alignment="left" fontSize="12">
+                    <b>Entrega: </b>
+                </para>
+            <nextFrame name="texto_devolver"/>
+                <para alignment="left" fontSize="12">
+                     <b>Cambio:</b>
+                </para>
+            <nextFrame name="entrega"/>
+                <para alignment="right" fontSize="12">
+                    <b>{{entrega}} €</b>
+                </para>
+            <nextFrame name="devolver"/>
+                <para alignment="right" fontSize="12">
+                     <b>{{devolver}} €</b>
+                </para>
+
+            {% endif %}
+
+        <nextFrame name="forma_pago"/>
+
+            <para fontSize="10">
+                <b>Forma de pago:</b> {{venta.forma_pago}}
+            </para>
+
+        <nextFrame name="IVA"/>
+            {% if regimen == "REBU" %}
+            <para>
+                <b>IVA INCLUIDO</b>
+            </para>
+            {% else %}
+            <para fontSize="12">
+                <b>{{total|isp_str}}</b>
+            </para>
+            {% endif %}
+
+        <nextFrame name="cliente"/>
+            <para fontSize="12">
+                <b>Nombre:</b> {{venta.nombre}}
+            </para>
+              <spacer length="4"/>
+            <para fontSize="12">
+                <b>DNI:</b> {{venta.DNI}}
+            </para>
+              <spacer length="4"/>
+            <para fontSize="12">
+                <b>Domicilio:</b> {{venta.domicilio}}
+            </para>
+            <spacer length="4"/>
+            <para fontSize="12">
+                <b>Telefono:</b> {{venta.telefono}}
+            </para>
+
+        <nextFrame name="garantia"/>
+        <para>
+          <b>GARANTÍA:</b>
+        </para>
+        <spacer length="3"/>
+        <para >
+          R.E.B.U. Garantía de un año o dos en caso de productos precintados. Dicha Garantía cubre exclusivamente el funcionaminteo del bien,
+          exluyendo los defectos por instalación, por trato inadecuado o por uso propio, asi como impactos, golpes, salpicaduras de agua, etc.
+          El comprador, en el plazo máximo de un año, (o dos si el producto esta precintado), podrá solicitar cuando proceda la reparación del producto.
+          En ningún caso se hará la devolución del importe.
+          <b>FreakMedia</b> garantiza que estos productos ha sido probados en el momento de la venta y que funcionaban adecuadamente en conformidad
+          a su descripción. Elementos del articulo comprado, que por su uso normal se desgasten o deteriorasen;
+          (Baterias, conectores de carga, cargadores, etc). <b>FreakMeda no garantiza la sustitución de dicho elemento</b>.
+          Aquellos productos que presente alguna avería y que estén en garanía del fabricante
+          deberán reclamarlo directamente al servicio téncnico de la marca.
+        </para>
+        <spacer length="5"/>
+        <para fontSize="9">
+          De conformidad con lo establecido en el Art. 5 de la Ley Orgánica 15/1999 de diciembre de
+              Protección de Datos de Carácter Personal, sus datos ha sido incorporados a un fichero de responsabilidad de FREAKMEDIA.
+              La finalidad del tratamiento es la de gestionar de forma adecuada la prestación del servicio que nos ha requerido.
+              Asimismo estos datos no serán cedidos a terceros, salvo las cesiones legalmente permitidas.
+              Podrá ejercitar su derechos de acceso, restificación, cancelación
+              y oposición en la sigiente dirección: Camino de rodan, 73, 18004 Granada;
+              o bien remitiendo un correo electrónico a freakmedia@gmail.com
+        </para>
+
+
+    {% endif %}
+
+  </story>
+</document>

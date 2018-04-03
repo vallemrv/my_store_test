@@ -1,0 +1,33 @@
+{% extends "base_admin.html" %}
+{% load admin_extras %}
+{% block content %}
+
+<div class="d-flex justify-content-between bg-light page-header">
+  <h1>Elegir modelo</h1>
+    <form id="form_find" onsubmit="get_modelos(); return false" class="form-inline my-2 my-lg-0" method="post">
+        {% csrf_token %}
+        <input class="form-control mr-sm-2" type="text" name="filter" placeholder="Buscar" aria-label="Search">
+        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Buscar</button>
+        <a href="{% url 'salir_elegir_modelo' %}" class="btn btn-primary ml-3">Cliente</a>
+    </form>
+</div>
+
+
+  <div id="content_main" class="bg-light p-3 mb-3 collapse">
+
+  </div>
+
+
+
+
+<script type="text/javascript">
+  function get_modelos(){
+    datos = $("#form_find").serialize();
+    $.post("{% url 'al_find_modelo'  %}", datos, function(res){
+         $("#content_main").removeClass("collapse");
+         $("#content_main").empty().append(res);
+    });
+    return false;
+  }
+</script>
+{% endblock content %}

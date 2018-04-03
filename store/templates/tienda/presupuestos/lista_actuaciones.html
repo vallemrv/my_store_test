@@ -1,0 +1,50 @@
+
+{% load admin_extras %}
+
+{% if query %}
+  <div class="bg-light p-3 mb-3 content-table">
+    <h5 class="">Lista de actuaciones</h5>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Codigo</th>
+          <th>Detalle</th>
+          <th>Precio</th>
+          <th class="text-center">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in query %}
+        <tr>
+          <td>{{ c.codigo }}</td>
+          <td>{{ c.precio }}</td>
+          <td>{{ c.detalle }}</td>
+          <td class="d-flex justify-content-around">
+            <a href="#" onclick="get_actuacion('{{c.codigo}}'); return false" class="btn btn-primary">
+                <span class="fa fa-check"></span></a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+    <div class="p-3">
+      <h5>Nueva actuación</h5>
+    </div>
+    <form id="form_complemento" method="post" onsubmit="save_complemento(); return false;">
+      {% csrf_token %}
+      <div class="form-row mb-2">
+        <div class="col-3">
+          <input type="text" name="codigo" placeholder="Codigo" class="form-control mr-2">
+        </div>
+        <div class="col-6">
+          <input type="text" name="detalle" placeholder="Detalle"  class="form-control mr-2">
+        </div>
+        <div class="col-3">
+          <input type="text" name="precio" placeholder="precio"  class="form-control mr-2">
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary">Aceptar</button>
+    </form>
+{% endif %}

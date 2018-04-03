@@ -1,0 +1,46 @@
+{% extends "base_admin.html" %}
+
+{% block content %}
+  <div class="bg-light page-header">
+    <h2>Informes y listados</h2>
+  </div>
+
+<div class="bg-light p-3 mb-3">
+  <div class="row">
+        <div class="col-6 col-md-4 col-lg-3">
+          <a href="{% url 'listado_facturas' %} " class="btn btn-primary btn-inicio">Facturas</a>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3">
+          <a href="{% url 'lista_productos' estado='VD' %}" class="btn btn-primary btn-inicio">P. Vendidos</a>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3">
+          <a href="{% url 'lista_presupuestos' %}" class="btn btn-primary btn-inicio">Presupuestos</a>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3">
+          <a href="{% url 'lista_productos' estado='CT'%}" class="btn btn-primary btn-inicio">Reparaciones</a>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3">
+          <a href="{% url 'listado_compras' %}" class="btn btn-primary btn-inicio">Compras</a>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3">
+          <a href="{% url 'listado_abonos' %}" class="btn btn-primary btn-inicio">Abonos</a>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3">
+          <a href="{% url 'en_construccion' %}" class="btn btn-primary btn-inicio">Gestoría</a>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3">
+          <a href="{% url 'lista_doc_policia' %}" class="btn btn-primary btn-inicio">Policía</a>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3">
+          <a href="{% url 'listado_sign' %}" class="btn btn-primary btn-inicio">Sin firmar</a>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3">
+          <a href="{% url 'garantias_none' %}" class="btn btn-primary btn-inicio">Garantias</a>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3">
+          <a href="{% url 'balances' %}" class="btn btn-primary btn-inicio">Balances</a>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

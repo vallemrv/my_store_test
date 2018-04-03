@@ -1,0 +1,85 @@
+{% extends "base_admin.html" %}
+{% load admin_extras %}
+{% block content %}
+<div class="bg-light page-header">
+  <h2 class="">Testeo</h2>
+</div>
+<div class="bg-light p-3 mb-3 content-table">
+  <h2 class="">Producto</h2>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Modelo</th>
+        <th>NS o IMEI</th>
+        <th>Marca</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>{{ p.modelo }}</td>
+        <td>{{ p.ns_imei }}</td>
+        <td>{{ p.modelo.marca }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="bg-light p-3 mb-3">
+  <table class="table table-striped">
+    <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Descripcion</th>
+          <th>Test</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for test in ListaTesteo %}
+            <tr>
+              <td>{{ test.nombre }}</td>
+              <td>{{ test.descripcion }}</td>
+              <td>
+                <select id="sel_{{test.id}}" onchange="set_estado({{test.id}}, {{p.id}})"  class="form-control" name="estado">
+                  {% for k, v in estado_test %}
+                    <option {% get_estado_value test.id p.id k %} value="{{k}}">{{v}}</option>
+                  {% endfor %}
+                </select>
+              </td>
+            </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+</div>
+
+<div class="bg-light p-3 mb-3">
+  <form action="{% url 'finalizar_testeo'  %}" method="post" >
+      <div class="row">
+        {% csrf_token %}
+        {% for field in form %}
+          <div class="form-group col-md-6">
+              <label for="{{field.name}}">{{ field.label }}</label>
+              {{ field|addcss:"form-control" }}
+          </div>
+        {% endfor %}
+        <div class="form-group col-md-6" style="padding-top: 5px;">
+            <button class="btn btn-success w-100 h-100">Finalizar testeo</button>
+        </div>
+        <input type="hidden" name="p_id" value="{{p.id}}"/>
+      </div>
+
+  </form>
+</div>
+
+{% csrf_token %}
+<script type="text/javascript">
+
+  function set_estado(test_id, p_id){
+      token = {}
+      name = $("input[type='hidden']").attr("name")
+      token[name] = $("input[type='hidden']").val()
+      estado = $("#sel_"+test_id).val()
+      $.post("{% url 'set_estado_testeo_none' %}"+test_id+"/"+p_id+"/"+estado+"/", data=token)
+  }
+</script>
+
+{%endblock%}

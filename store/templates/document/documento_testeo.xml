@@ -1,0 +1,124 @@
+<!--
+@Author: Manuel Rodriguez <valle>
+@Date:   18-Oct-2017
+@Email:  valle.mrv@gmail.com
+@Last modified by:   valle
+@Last modified time: 07-Feb-2018
+@License: Apache license vesion 2.0
+-->
+
+{% load filter_document %}
+<!DOCTYPE document SYSTEM "rml.dtd">
+<document filename="example_01.pdf">
+  <template leftMargin="40" title="{{title}}" showBoundary="no">
+    <!--this section contains elements of the document -->
+    <!--which are FIXED into position. -->
+    <pageTemplate id="main" pageSize="a4">
+      <pageGraphics>
+        <image file="templates/document/freakmedia-logo.jpg" x="40" y="700" mask='auto' width="250" preserveAspectRatio="1"/>
+        <stroke color="black"/>
+
+        <setFont name="Helvetica-Bold" size="10"/>
+        <setFont name="Helvetica" size="10"/>
+        {% if "firmas/testeo/"|file_exist:firma %}
+            <image file="firmas/testeo/{{firma}}" x="370" y="170" height='150' mask='auto' preserveAspectRatio="yes"/>
+          {% endif %}
+        </pageGraphics>
+
+      <frame id="1" x1="35" y1="565" width="525" height="120"/>
+      <frame id="2" x1="35" y1="480" width="400" height="90"/>
+      <frame id="3" x1="35" y1="460" width="400" height="25"/>
+      <frame id="4" x1="35" y1="390" width="220" height="60"/>
+      <frame id="6" x1="35" y1="290" width="525" height="100"/>
+      <frame id="7" x1="50" y1="130" width="230" height="150"/>
+      <frame id="8" x1="300" y1="180" width="230" height="100"/>
+      <frame id="9" x1="35" y1="50" width="525" height="100"/>
+
+    </pageTemplate>
+  </template>
+  <stylesheet>
+    <!--this section contains the STYLE information for -->
+    <!--the document, but there isn't any yet. The tags still -->
+    <!--have to be present, however, or the document won't compile.-->
+  </stylesheet>
+  <story>
+    <para fontSize="13">
+      <b>Samuel Jesús Vallecillos Marcos</b>, que ejerce la actividad mercantil de COMPRA-VENTA
+      en el establecimentio FreakMedia, con domicilio en
+      <b> camino de ronda 73, Granada </b>
+       según lo esablecido
+       en el Art 30 del Real Decreto 3390/1981 10, de Dicembre, ha registrado la sigiente operacion:
+         </para>
+       <spacer length="16"/>
+
+      <para fontSize="13">
+          <b>Fecha:</b> {{fecha}}
+      </para>
+
+      <nextFrame/>
+          <para fontSize="12">
+              <b>Nombre:</b> {{nombre}}
+          </para>
+            <spacer length="4"/>
+          <para fontSize="12">
+              <b>DNI:</b> {{DNI}}
+          </para>
+            <spacer length="4"/>
+          <para fontSize="12">
+              <b>Domicilio:</b> {{domicilio}}
+          </para>
+          <spacer length="4"/>
+          <para fontSize="12">
+              <b>Telefono:</b> {{telefono}}
+          </para>
+
+      <nextFrame/>
+      <para >
+         DESCRIPCIÓN DEL PRODUCTO
+      </para>
+      <nextFrame/>
+      <para fontSize="13">
+          <b>MODELO:</b> {{modelo}}
+      </para>
+      <para fontSize="13">
+         <b>NS o IMEI:</b> {{ns_imei}}
+      </para>
+
+      <nextFrame/>
+      <para >
+          El cliente da su consentimiento a FREAKMEDIA para testear y/o probar las funciones básicas del terminal, así como
+          un exhaustivo exame del estado de la batería, conectores, botones y LCD del mismo.
+          Los técnicos utilizarán tarjetas SIM propias de la empresa para probar las funciones de red de los terminales
+          sin interferir en los datos del dueño del terminal. Por consigiente, no nos hacemos responsables del terminales que entren
+          en test y hayan sido anteriormente sustraídos o encontrados y pueden ser denunciados al conectar a la red.
+      </para>
+      <nextFrame/>
+      <para >
+        COMPRADOR:
+      </para>
+      <illustration width="100" height="100" borderStrokeWidth="1" borderStrokeColor="black">
+           <!-- x and y coordinates are from the bottom left corner -->
+           <!-- of the containing illustration -->
+           {% if firma_freak %}
+            <image file="static/media/{{firma_freak}}" x="20" y="20"  width="150" height="150"/>
+           {% endif %}
+      </illustration>
+
+      <nextFrame/>
+      <para >
+         VENDEDOR:
+      </para>
+      <nextFrame/>
+      <para >
+        De conformidad con lo establecido en el Art. 5 de la Ley Orgánica 15/1999 de diciembre de
+            Protección de Datos de Carácter Personal, sus datos han sido incorporados a un fichero de responsabilidad de FREAKMEDIA.
+            La finalidad del tratamiento es la de gestionar de forma adecuada la prestación del servicio que nos ha requerido.
+            Asimismo estos datos no serán cedidos a terceros, salvo las cesiones legalmente permitidas.
+            Podrá ejercitar su derechos de acceso, restificación, cancelación
+            y oposición en la sigiente dirección: Camino de rodan, 73, 18004 Granada;
+            o bien remitiendo un correo electrónico a freakmediagr@gmail.com
+
+      </para>
+
+  </story>
+</document>

@@ -1,0 +1,41 @@
+<!--
+@Author: Manuel Rodriguez <valle>
+@Date:   18-Oct-2017
+@Email:  valle.mrv@gmail.com
+@Last modified by:   valle
+@Last modified time: 09-Dec-2017
+@License: Apache license vesion 2.0
+-->
+
+{% load filter_document %}
+<!DOCTYPE document SYSTEM "rml.dtd">
+<document filename="{{file_name}}">
+ <template title="{{title}}">
+ <!--this section contains elements of the document -->
+ <!--which are FIXED into position. -->
+ <pageTemplate id="main" pageSize="(50,100)">
+ <frame id="first" x1="30" y1="30" width="50" height="100"/>
+ </pageTemplate>
+ </template>
+ <stylesheet>
+ <!--this section contains the STYLE information for -->
+ <!--the document, but there isn't any yet. The tags still -->
+ <!--have to be present, however, or the document won't compile.-->
+ </stylesheet>
+ <story>
+ <!--this section contains the FLOWABLE elements of the -->
+ <!--document. These elements will fill up the frames -->
+ <!--defined in the <template> section above. -->
+ <para>
+ Welcome to RML!
+ </para>
+ <para>
+ This is the "story". This is the part of the RML document where
+ your text is placed.
+ </para>
+ <para>
+ It should be enclosed in "para" and "/para" tags to turn it into
+ paragraphs.
+ </para>
+ </story>
+</document>

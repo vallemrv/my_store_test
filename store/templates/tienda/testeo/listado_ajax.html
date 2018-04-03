@@ -1,0 +1,36 @@
+{% load filter_document %}
+
+{% if compras %}
+  <div class="bg-light p-3 mb-3 content-table">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Modelo</th>
+          <th>NS-IMEI</th>
+          <th>Cliente</th>
+          <th class="text-center">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in compras %}
+        <tr>
+          <td>{{ c.producto.modelo }}</td>
+          <td>{{ c.producto.ns_imei }}</td>
+          <td>{{ c.cliente.DNI}}</td>
+          <td class="text-center">
+              <a href="{% url 'get_doc_testeo_by_id' id_doc=c.pk %}" class="btn btn-primary ">
+                <span class="fa fa-file"></span></a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+    <div class="jumbotron jumbotron-fluid">
+      <div class="container pl-3">
+          <h1 class="display-3">Upps!</h1>
+          <p class="lead">No se ha encotrado ninguna coincidencia....</p>
+      </div>
+    </div>
+{% endif %}

@@ -1,0 +1,62 @@
+{% extends "base_admin.html" %}
+{% load admin_extras %}
+{% block content %}
+<div class="bg-light d-flex justify-content-between page-header">
+  <h2 class="">Clientes</h2>
+    {% if tipo == 'comprar' %}
+        <a href="{% url 'salir_compra' %} " class="btn btn-primary ml-2">Clientes</a>
+    {% elif tipo == 'abonar' %}
+        <a href="{% url 'salir_abonar' %} " class="btn btn-primary ml-2">Clientes</a>
+    {% elif tipo == 'ventas' %}
+        <a href="{% url 'salir_venta' %} " class="btn btn-primary ml-2">Clientes</a>
+    {% elif tipo == 'presupuesto' %}
+        <a href="{% url 'salir_presupuesto' %} " class="btn btn-primary ml-2">Clientes</a>
+  {% endif %}
+</div>
+
+<div class="bg-light p-3 mb-3">
+  <div class="p-3">
+    <h3>{{titulo}}</h3>
+  </div>
+  {% if form_error %}
+    <div  class="alert alert-success alert-dismissable">
+      <button aria-hidden="true" data-dismiss="alert" class="close" type="button"> × </button>
+      {% for field, errors in form_error.items %}
+        {% for error in errors %}
+         <p>{{error}}</p>
+        {% endfor %}
+      {% endfor %}
+      </div>
+  {% endif %}
+  <form id='form_main' method="post" autocomplete="off">
+    <div class="row">
+      {% for field in form %}
+        <div class="form-group col-md-6">
+          <label for="{{field.name}}">{{ field.label }}</label>
+          {{ field|addcss:"form-control" }}
+        </div>
+      {% endfor %}
+    </div>
+    {% csrf_token %}
+
+
+    <div class="form-group" style="padding-top: 5px;">
+     {% if tipo == 'comprar' %}
+         <button class="btn btn-success">Modificar</button>
+         <a href="{% url 'cp_productos_none' %} " class="btn btn-primary">Comprar</a>
+      {% elif tipo == 'ventas' %}
+        <button class="btn btn-success">Modificar</button>
+        <a href="{% url 'ventas' %} " class="btn btn-primary">Ventas</a>
+      {% elif tipo == 'presupuesto' %}
+        <button class="btn btn-success">Modificar</button>
+        <a href="{% url 'presupuesto' %} " class="btn btn-primary">Presupuesto</a>
+      {% elif tipo == 'abonar' %}
+        <button class="btn btn-success">Modificar</button>
+        <a href="{% url 'abonos' %} " class="btn btn-primary">Abonar</a>
+      {% elif tipo == 'no_existe' %}
+        <button class="btn btn-primary">Crear</button>
+      {% endif %}
+    </div>
+  </form>
+</div>
+{%endblock%}

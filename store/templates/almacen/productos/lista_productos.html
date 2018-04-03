@@ -1,0 +1,32 @@
+{% extends "base_admin.html" %}
+{% load admin_extras %}
+{% block content %}
+<div class="bg-light d-flex justify-content-between page-header">
+      <h2 class="">Productos</h2>
+      <form onsubmit="get_productos(); return false;" class="form-inline my-2 my-lg-0" method="post">
+          {% csrf_token %}
+          <input class="form-control mr-sm-2" type="text" name="filter" placeholder="Buscar" aria-label="Search">
+          <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Buscar</button>
+          {% if estado == "ST" %}
+            <a href="{% url 'productos' %}" class="btn btn-primary ml-2"><span class="fa fa-plus"></span></a>
+          {% endif %}
+      </form>
+</div>
+
+<div id="main-content">
+  {% include "almacen/productos/lista_productos_ajax.html" %}
+</div>
+
+
+<script type="text/javascript">
+
+    function get_productos(){
+       datos = $("form").serialize();
+       $.post("{% url 'lista_productos' estado=estado %}", datos, function(res){
+          $("#main-content").empty().append(res)
+       })
+    }
+
+</script>
+
+{% endblock content %}

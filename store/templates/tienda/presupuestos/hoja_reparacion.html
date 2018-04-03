@@ -1,0 +1,261 @@
+{% extends "base_admin.html" %}
+{% load admin_extras %}
+{% block content %}
+
+<div class="bg-light page-header">
+  <h1 class="d-inline">Reparaciones</h1>
+  <form id="form_find" onsubmit="find_actuacion(); return false" class="form-inline my-2 my-lg-0 float-right" method="post">
+      {% csrf_token %}
+      <input id="input_main" class="form-control mr-sm-2 typeahead" type="text" autocomplete="off" name="codigo" placeholder="Código" aria-label="Search">
+      <button class="btn btn-outline-success mr-2" type="submit">Agregar</button>
+      <button class="btn btn-primary" onclick="nuevo();" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+            Nuevo
+      </button>
+  </form>
+  <div class="clearfix">
+  </div>
+</div>
+
+<div class="bg-light p-3 mb-3  collapse" id="collapseExample">
+  {% include "tienda/presupuestos/lista_actuaciones.html" %}
+</div>
+
+<div class="bg-light p-3 mb-3">
+  <div class="row">
+     <div class="col-6">
+       <b>{{ c.nombre_completo}}</b>
+     </div>
+     <div class="col-6">
+        <b>{{ c.telefono}}</b>
+     </div>
+  </div>
+</div>
+<div class="bg-light p-3 mb-3">
+  <div class="row">
+    <div class="col-4">
+       <b>{{ p.producto|modelo}}</b>
+    </div>
+    <div class="col-4">
+       <b>{{ p.notas_cliente}}</b>
+    </div>
+    <div class="col-4">
+       <b>{{ p.notas_tecnico}}</b>
+    </div>
+  </div>
+</div>
+
+
+<div class="bg-light p-3 mb-3">
+  <div class="bg-light p-3 mb-3 content-table">
+    <h2 class="">Presupuesto</h2>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Código</th>
+              <th>Descripción</th>
+              <th>Can</th>
+              <th>Importe</th>
+              <th>Des</th>
+              <th>Total</th>
+              <th></th>
+              <colgroup>
+                <col style="width:20%">
+                <col style="width:40%">
+                <col style="width:10%">
+                <col style="width:10%">
+                <col style="width:10%">
+                <col style="width:10%">
+              </colgroup>
+            </tr>
+          </thead>
+          <tbody id="lineas_pres">
+
+          </tbody>
+        </table>
+      </div>
+        <div class="form-group" style="padding-top: 5px;">
+            {% if tipo == "entrega" %}
+             <a  href="{% url 'set_entregado' id_producto=p.producto.id %} " class="btn btn-primary">Entregar producto</a>
+            {% elif tipo == "modificar" %}
+             <a  href="{% url 'informes'  %} " class="btn btn-primary">salir</a>
+            {% endif %}
+             <a  href="{% url 'get_presupuesto_pdf' id_producto=p.producto.id %} " class="btn btn-primary">Imprimir</a>
+             <a  href="{% url 'facturar_presupuesto' id_pres=p.id %}" class="btn btn-primary">Facturar</a>
+             <div class="float-right mr-2" style="font-size: 1.5em">
+                <b>Total: <span id="total">0</span> €</b>
+             </div>
+      
+        </div>
+
+</div>
+
+<script type="text/javascript">
+  var ns_imei = []
+  var lineas = []
+  var total = 0;
+  var html_nuevo = "";
+  var grabar = false;
+
+  $(function(){
+    html_nuevo = $("#collapseExample").html();
+    grabar = false;
+    $.get("{% url 'get_lineas_presupuesto' id_pres=p.id %}", function(res){
+       $(res).each(function(index, value){
+          crear_linea_producto(value)
+       });
+       grabar = true;
+    })
+  });
+
+  function nuevo(){
+    $("#collapseExample").html(html_nuevo);
+  }
+
+  function terminar(){
+    if (lineas.length > 0){
+      data = {
+        "csrfmiddlewaretoken": $("input[name='csrfmiddlewaretoken']").val(),
+        "lineas": JSON.stringify(lineas),
+      }
+      $.post("{% url 'save_lineas_pres' id_pres=p.id %}", data, function(res){
+          console.log("okey")
+      });
+    }
+  }
+
+  function get_total_descuento(datos){
+    var descuento = 1
+    if (datos.descuento > 0){
+      descuento = 1 - (datos.descuento / 100.00)
+    }
+    return datos.can * datos.total_unidad  * descuento
+  }
+
+  function get_linea_cantidad(datos){
+     return $("<input id='can_"+datos.codigo+"' type='text' name='can' value='1'>")
+                             .val(datos.can)
+                             .addClass("form-control")
+                             .change(function(){
+                                var can = $(this).val();
+                                var total_unidad = datos.total_unidad
+                                var descuento = datos.descuento
+                                datos.can = can;
+                                var total_linea = get_total_descuento(datos)
+                                $("#total"+datos.codigo).text(total_linea.toFixed(2));
+                                refresh_total();
+                             })
+     }
+
+
+  function crear_linea_producto(res){
+    var index = ns_imei.indexOf(res.codigo)
+    if (index > -1){
+        var datos = lineas[index];
+          var can = parseInt(datos.can) + 1;
+          $("#can_"+res.codigo).val(can);
+          $("#can_"+res.codigo).change();
+          return false;
+    }
+    body = $("#lineas_pres");
+    var datos = {
+         codigo: res.codigo,
+         detalle: res.detalle,
+         can: res.can,
+         pk: res.pk,
+         total_unidad: res.precio,
+         descuento: res.descuento,
+    }
+    body.append($('<tr>')
+      .append($('<td>').text(res.codigo))
+      .append($('<td>').html(res.detalle))
+      .append($('<td>').append(get_linea_cantidad(datos)))
+      .append($('<td>').text(parseFloat(res.precio).toFixed(2)))
+      .append($('<td>').append($("<input  type='text' name='descuento' value='0'>")
+                    .val(res.descuento)
+                    .addClass("form-control")
+                    .change(function(){
+                      var descuento = $(this).val();
+                      var total_unidad = datos.total_unidad
+                      var can = datos.can
+                      datos.descuento = descuento;
+                      var total_linea = get_total_descuento(datos);
+                      $("#total"+datos.codigo).text(total_linea.toFixed(2));
+                      refresh_total();
+                    })))
+      .append($('<td id="total'+res.codigo+'">').text(get_total_descuento(datos).toFixed(2)))
+      .append($("<td>").append(
+        $("<a>").append($('<span>').addClass("fa fa-trash"))
+                .addClass("btn btn-primary")
+                .on("click", function(){
+                   var linea = $(this).parent().parent()
+                   var index = lineas.indexOf(datos);
+                   lineas.splice(index, 1);
+                   ns_imei.splice(index, 1);
+                   linea.remove();
+                   refresh_total()
+                })
+      )))
+
+    lineas.push(datos);
+    ns_imei.push(datos.codigo)
+    refresh_total();
+    $("#input_main").focus();
+
+  }
+
+  function refresh_total(){
+    total = 0;
+    for (i=0; i<lineas.length; i++){
+        total += get_total_descuento(lineas[i])
+    }
+    $("#total").text(total.toFixed(2))
+    if (grabar) terminar();
+  }
+
+  function find_actuacion(){
+    try {
+          data = $("#form_find").serialize();
+          $.post("{% url 'find_actuacion'  %} ", data, function(res){
+              $("#form_find")[0].reset()
+              $("#collapseExample").html(res)
+              $("#collapseExample").collapse("show")
+          });
+    }
+    catch(err) {
+      console.log (err.message);
+    }
+    return false;
+  }
+
+  function get_actuacion(codigo){
+    try {
+      data = {
+        "csrfmiddlewaretoken": $("input[name='csrfmiddlewaretoken']").val(),
+        "codigo": codigo,
+      }
+      $.post("{% url 'get_actuacion'  %} ", data, function(res){
+        if (res.result){
+          crear_linea_producto(res);
+          $("#form_find")[0].reset()
+          $("#collapseExample").collapse("hide")
+        }
+      });
+    }catch(err) {
+        console.log (err.message);
+      }
+    return false;
+  }
+
+  function save_complemento(){
+     data = $("#form_complemento").serialize();
+     $.post("{% url 'save_actuacion'  %}", data, function(res){
+       if (res.result){
+         crear_linea_producto(res);
+         $("#form_complemento")[0].reset()
+         $("#collapseExample").collapse("hide")
+       }
+     });
+     return false;
+  }
+</script>
+{% endblock content %}
